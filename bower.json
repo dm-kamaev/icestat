@@ -1,0 +1,40 @@
+{
+  "name": "icestat",
+  "version": "1.0.0",
+  "authors": [
+    "Shevchenko Taras <back.neomind@gmail.com>"
+  ],
+  "description": "In this friendly user interface, you can watch different statistic information and manage radio stations for use them.",
+  "moduleType": [
+    "amd",
+    "es6",
+    "globals",
+    "node",
+    "yui"
+  ],
+  "keywords": [
+    "icecast",
+    "logs",
+    "parser"
+  ],
+  "license": "MIT",
+  "homepage": "http://tgsoft.in",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "datatables.net": "~1.10.10",
+    "datatables.net-bs": "~1.10.10",
+    "datatables.net-buttons": "~1.1.1",
+    "datatables.net-buttons-bs": "~1.1.1",
+    "datatables.net-buttons-dt": "~1.1.1",
+    "jquery-ui": "~1.11.4",
+    "jszip": "~2.5.0",
+    "jtable": "~2.4.0",
+    "pdfmake": "~0.1.20"
+  }
+}

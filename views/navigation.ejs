@@ -1,0 +1,88 @@
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                <span class="icon-bar"><!----></span>
+                <span class="icon-bar"><!----></span>
+                <span class="icon-bar"><!----></span>
+            </button>
+            <a class="navbar-brand" href="#"><img src='/images/logo_white.png' height="20px" id='logo'/></a>
+        </div>
+        <div class="collapse navbar-collapse" id="myNavbar">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="javascript:showHomePage();">Home</a></li>
+                <li id='dropMounts' class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Mounts<span class="caret"><!----></span></a>
+                    <ul id='dropMountItems' class="dropdown-menu dropdown-menu-form">
+                        <!--li><a href="#" class="small mount_item" data-value="option1" tabIndex="-1"><input type="checkbox"/>&nbsp;Европа +</a></li>
+                        <li><a href="#" class="small mount_item" data-value="option2" tabIndex="-1"><input type="checkbox"/>&nbsp;Дорожное</a></li-->
+                    </ul>
+                </li>
+                <li class="dropdown" id="menuReports">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Reports<span class="caret"><!----></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="javascript:showAQHReport();">Average Quarter Hour</a></li>
+                        <li><a href="javascript:showTSLReport();">Time Spent Listening</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown" id="menuListeners">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-submenu>Listeners<span class="caret"><!----></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="javascript:showPeakListenersPage();">Peak</a></li>
+                        <li><a href="javascript:show_peak_listeners_page.start();">New Peak</a></li>
+                        <li class="dropdown-submenu">
+                            <a tabindex="0">When</a>
+                            <ul class="dropdown-menu">
+                              <li><a href="javascript:showListenersWhenStartPage();" tabindex="0">Start</a></li>
+                              <li><a href="javascript:showListenersWhenStopPage();" tabindex="0">Stop</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="javascript:showCurrentListenersPage();">Current</a></li>
+                        <li><a href="javascript:showSameTimeListenersPage();">Same Time</a></li>
+                        <li><a href="javascript:showUniqListenersPage();">Unique</a></li>
+                        <li class="dropdown-submenu">
+                            <a tabindex="0">Map</a>
+                            <ul class="dropdown-menu">
+                              <li><a href="javascript:showMapByCountryListenersPage();" tabindex="0">Country</a></li>
+                              <li><a href="javascript:showMapByCityListenersPage();" tabindex="0">City</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li class="dropdown" id="menuOthers">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Other<span class="caret"><!----></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="javascript:showDurationsPage();">Durations</a></li>
+                        <li><a href="javascript:showReferersPage();">Referers</a></li>
+                        <li><a href="javascript:showUserAgentsPage();">User agents</a></li>
+                        <li><a href="javascript:showSongsRatioPage();">Songs ratio</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Theme<span class="caret"><!----></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="javascript:setBootstrapTheme('default');">Default</a></li>
+                        <li><a href="javascript:setBootstrapTheme('cyborg');">Cyborg</a></li>
+                        <li><a href="javascript:setBootstrapTheme('readable');">Readable</a></li>
+                        <li><a href="javascript:setBootstrapTheme('slate');">Slate</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Account<span class="caret"><!----></span></a>
+                    <ul class="dropdown-menu">
+                        <% if (user.admin) { %>
+                            <li><a href="javascript:showAdminStationsPage();">Stations</a></li>
+                            <li><a href="javascript:showAdminMountsPage();">Mounts</a></li>
+                            <li><a href="javascript:showAdminUsersPage();">Users</a></li>
+                            <li><a href="javascript:showPermissionsPage();">Permissions</a></li>
+                        <% } %>
+                        <li><a href="javascript:showAccountSettingsPage();">Settings</a></li>
+                        <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

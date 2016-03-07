@@ -1,0 +1,158 @@
+#chart_uniq_listeners {
+    height: 500px;
+}
+
+#chart_other_durations {
+    height: 500px;
+}
+
+#table_other_durations {
+    display: none;
+}
+
+#table_other_referers {
+    display: none;
+}
+
+#table_other_user_agents {
+    display: none;
+}
+
+#table_other_songs_ratio {
+    display: none;
+}
+
+#table_station_mount_groups {
+    display: none;
+}
+
+#table_country_listeners {
+    display: none;
+}
+
+#table_city_listeners {
+    display: none;
+}
+
+#table_report_aqh {
+    display: none;
+}
+
+#table_report_tsl {
+    display: none;
+}
+
+.station_host {
+    text-align: center;
+    font-weight: bold;
+    vertical-align: bottom !important;
+}
+.station_mount {
+    text-align: right;
+}
+.station_name {
+    text-align: right;
+}
+
+#dropMounts {
+    display: none;
+}
+
+#menuReports {
+    display: none;
+}
+
+#menuListeners {
+    display: none;
+}
+
+#menuOthers {
+    display: none;
+}
+
+#dropMountItems input[type=checkbox] {
+    vertical-align: middle;
+    position: relative;
+    bottom: 2px;
+}
+
+.jtable-main-container a,
+.jtable-main-container td,
+.jtable-main-container input,
+.jtable-main-container select {
+    color: black !important;
+    font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+.column_right_align {
+    text-align: right;
+}
+
+.jtable-permissions-command-button {
+  background: url('/images/permissions.png') no-repeat;
+  width: 16px;
+  height: 16px;
+  opacity: 0.5;
+}
+
+div.jtable-column-header-container {height: auto !important;}
+
+caption {
+    caption-side: bottom;
+    margin-top:10px;
+    text-align: left;
+    margin-bottom: 5px;
+    font-size: 120%;
+    padding: 5px;
+}
+
+td.success.sum {
+    font-weight: bold;
+    color: black;
+}
+
+@media only screen and (max-width: 800px) {
+    /* Force table to not be like tables anymore */
+    #no-more-tables table,
+    #no-more-tables thead,
+    #no-more-tables tbody,
+    #no-more-tables th,
+    #no-more-tables td,
+    #no-more-tables tr {
+        display: block;
+    }
+
+    /* Hide table headers (but not display: none;, for accessibility) */
+    #no-more-tables thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    #no-more-tables tr { border: 0px solid #ccc; }
+
+    #no-more-tables td {
+        /* Behave like a "row" */
+        border: none;
+        border-bottom: 0px solid #eee;
+        position: relative;
+        padding-left: 40%;
+        white-space: normal;
+        text-align:left;
+    }
+
+    #no-more-tables td:before {
+        /* Now like a table header */
+        position: absolute;
+        /* Top/left values mimic padding */
+        top: 6px;
+        left: 6px;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+        text-align:left;
+        font-weight: bold;
+    }
+
+    /* Label the data */
+    #no-more-tables td:before { content: attr(data-title); }
+}

@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+    <head>
+        <title><%= title %></title>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <link rel='stylesheet' href='/css/signin.min.css' id='strapcss'/>
+        <link rel='stylesheet' href='/css/jumbotron_sign.min.css' id='strapcss'/>
+        <link rel='stylesheet' href='/css/bootstrap/bootstrap.min.css' id='strapcss'/>
+        <link rel='stylesheet' href='/css/bootstrap/bootstrap-theme.min.css' id='themecss'/>
+    </head>
+    <body>
+        <div class="container">
+
+            <div class="header">
+                <ul class="nav nav-pills navbar pull-right">
+                    <li class="navitem-login active"><a href="/"><span class="glyphicon glyphicon-log-in"><!----></span> Login</a></li>
+                    <li class="navitem-register"><a href="/signup"><span class="glyphicon glyphicon-user"><!----></span> Register</a></li></ul>
+                <h3 class="text-muted"><img src="/images/logo_blue.png"/></h3>
+            </div>
+            <div class="jumbotron">
+                <form class="form-signin" action="/" method="post">
+                    <h2 class="form-signin-heading">Please login</h2>
+                    <label for="inputUsername" class="sr-only">Username</label>
+                    <input type="text" id="inputUsername" name="username" class="form-control" placeholder="Username" required autofocus>
+                    <label for="inputPassword" class="sr-only">Password</label>
+                    <input type="password" id="inputPassword" name="password" class="form-control" placeholder="Password" required>
+                    <!--div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="remember" value="remember-me"> Remember me
+                        </label>
+                    </div-->
+                    <button class="btn btn-lg btn-success btn-block" type="submit">Sign in</button>
+                </form>
+                <!-- show any messages that come back with authentication -->
+                <% if (message.length > 0) { %>
+                    <div class="alert alert-danger"><%= message %></div>
+                <% } %>
+            </div>
+
+            <div class="footer">
+                <p>&copy; RadioStatistica, 2016</p>
+            </div>
+        </div>
+    </body>
+</html>

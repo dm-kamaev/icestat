@@ -1,0 +1,36 @@
+<h1><%= msg.state %></h1>
+<br/>
+Parse <b>access.log</b> files takes: <b><%= msg.timeParsingAccessLogs %></b><br/>
+Parse <b>playlist.log</b> files takes: <b><%= msg.timeParsingPlaylistLogs %></b><br/>
+<br/>
+
+<% if (msg.access_errors.length > 0) { %>
+
+    Error count (when parse access.log): <b><%= msg.access_errors.length %></b><br>
+
+    <b>Description:</b><br>
+    <ul>
+        <% for (var i = 0; i < msg.access_errors.length; i++) { %>
+            <li><%= msg.access_errors[i] %><br/></li>
+        <% } %>
+    </ul>
+
+<% } else { %>
+    Access log files was parsed without errors.<br/>
+<% } %>
+
+<% if (msg.playlist_errors.length > 0) { %>
+
+    Error count (when parse playlist.log): <b><%= msg.playlist_errors.length %></b><br>
+
+    <b>Description:</b><br>
+    <ul>
+        <% for (var i = 0; i < msg.playlist_errors.length; i++) { %>
+            <li><%= msg.playlist_errors[i] %><br/></li>
+        <% } %>
+    </ul>
+
+<% } else { %>
+    Playlist log files parsed without errors.
+<% } %>
+

@@ -1,0 +1,70 @@
+Формула пересечений времени:
+---------------------------
+
+DELIMITER $$
+
+DROP FUNCTION IF EXISTS `IsOverlapDates`$$
+
+CREATE FUNCTION `IsOverlapDates`(
+			startDate1 DATETIME,
+    		endDate1 DATETIME,
+    		startDate2 DATETIME,
+    		endDate2 DATETIME
+		) RETURNS TINYINT(1)
+    DETERMINISTIC
+BEGIN
+	DECLARE Overlap TINYINT DEFAULT 0;
+
+	SET Overlap = (SELECT CASE WHEN
+        			(startDate1 BETWEEN startDate2 AND endDate2) OR -- for inner and end date outer
+        	        (endDate1 BETWEEN startDate2 AND endDate2) OR -- for inner and start date outer
+        		    (startDate2 BETWEEN startDate1 AND endDate1) -- only one needed for outer range where dates are inside.
+               THEN 1 ELSE 0 END);
+	RETURN Overlap;
+END$$
+
+DELIMITER ;
+
+
+BEGIN
+-- select IsOverlapDates('2014-05-01 23:59:00', '2014-06-01 01:59:00', '2014-06-01 01:00:00', '2014-06-01 01:30:00');
+
+SELECT ranges.start_date, ranges.end_date, IsOverlapDates(ranges.start_date, ranges.end_date, '2016-01-04 00:00:00', '2016-01-04 01:00:00') as overlap
+        FROM (
+
+                SELECT id, FROM_UNIXTIME( UNIX_TIMESTAMP( DATE ) - duration ) AS start_date, DATE AS end_date
+                FROM  `2016-01-04`
+                WHERE mount =  '/blackstarradio128.mp3'
+             ) ranges
+             ORDER BY ranges.start_date ASC;
+
+END
+---------------------------
+
+
+
+SELECT FROM_UNIXTIME(UNIX_TIMESTAMP(date) - duration) as start_date, date as end_date  FROM `2016-01-04` where mount='/blackradio128.mp3'
+
+SELECT id, FROM_UNIXTIME(UNIX_TIMESTAMP(date) - duration) as start_date, date as end_date FROM `2016-01-04` as ranges where mount='/blackradio128.mp3'
+
+select TIMEDIFF(ranges.end_date, ranges.start_date) as diff from (SELECT id, FROM_UNIXTIME(UNIX_TIMESTAMP(date) - duration) as start_date, date as end_date FROM `2016-01-04`  where mount='/blackradio128.mp3') ranges
+
+
+
+Заметки:
+------------------------------------
+ Если нужно обработать спец дату, тогда нужно задать вилку дат по которой будут выбираться логи
+
+ а после указать\наколоть конкретную дату (это необходимо сделать так как нужная дать может "прятатся" в логе с текущей датой - таким образом ее нужно "найти").
+
+
+select ftp_host from stations where update_db=1 group by ftp_host asc
+
+ Vim search for a pattern and if occurs delete to end of line
+ :%s/{pattern}.*//
+
+ grep -c "Return  res"
+
+ select Shift + V
+
+:sort
