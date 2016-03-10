@@ -106,14 +106,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Для production проверить работоспособность
-if (app.get('env') === 'development') {
-  app.use(session({ secret: 're2MoPhieRohoo7ye5ae', resave: true, saveUninitialized: true }));
-} else {
-  app.use(session({ store: new RedisStore({port: 6379}), secret: 're2MoPhieRohoo7ye5ae', saveUninitialized: true, resave: true }));
-}
-//app.use(session({ secret: 're2MoPhieRohoo7ye5ae', resave: true, saveUninitialized: true }));
-// app.use(session({ store: new RedisStore({port: 6379}), secret: 're2MoPhieRohoo7ye5ae', saveUninitialized: true, resave: true }));
+// должен стоять Redis или кидай forward
+app.use(session({ store: new RedisStore({ host: '127.0.0.1', port: 6379}), secret: 're2MoPhieRohoo7ye5ae', saveUninitialized: true, resave: true }));
+// на случай отсутcтвия redis
+// app.use(session({ secret: 're2MoPhieRohoo7ye5ae', resave: true, saveUninitialized: true }));
 
 app.use(passport.initialize());
 app.use(passport.session());
