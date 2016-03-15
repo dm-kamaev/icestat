@@ -463,7 +463,7 @@ var show_peak_listeners_page = (function () {
         if (hash_on_columnCharts[mount_name] === 1) {
           step_data[mount_name_for_table] = data[i][1]; // value listeners
           total           += data[i][1];
-          total_7days_ago += Table_data_7days_ago[mount][i][1]; // value listeners 7 days ago
+          total_7days_ago += (Table_data_7days_ago[mount][i]) ? Table_data_7days_ago[mount][i][1] : 0; // value listeners 7 days ago
         }
       });
       if (hash_on_columnCharts['Total'] === 1) { step_data.total = total; }
