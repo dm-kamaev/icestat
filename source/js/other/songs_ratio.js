@@ -10,7 +10,7 @@ function showSelectMountDialogForSongsRatio() {
     var mountList = getSelectedMounts();
     for (var i = 0; i < mountList.length; i++) {
         var mount = mountList[i];
- 		var htmlMountItem = '<label class="radio-inline">';
+        var htmlMountItem = '<label class="radio-inline">';
         htmlMountItem += '<input type="radio" name="inlineRadioOptions" id="mount' + i + '" value="' + mount.mount_id + '"> ' + mount.name + '</input>';
         htmlMountItem += '</label><br/>';
         htmlMountList += htmlMountItem;

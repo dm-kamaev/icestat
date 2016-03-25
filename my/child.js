@@ -83,7 +83,36 @@ function spawn_write_file (commandWithOption, path, cb) {
 }
 exports.spawn_write_file = spawn_write_file;
 
+// listen_print(['grep', 'js*', '-r', '/icestat/routes/'], function(err, result) {
+//     console.log(err || null, result || null);
+//   }
+// );
+function listen_print (commandWithOption, cb) {
+  var command   = commandWithOption[0],
+      option    = commandWithOption.slice(1);
+  var spawn     = require('child_process').spawn,
+      process   = spawn(command, option), // '/usr/local/bin/node', ['/r_m/periodical/ins_in_Banks.js']
+      all_error = null;
 
+  process.stdout.on('data', function (data) {
+    console.log('stdout: ' + data);
+  });
+
+  process.stderr.on('data', function (err) {
+    console.log('stderr: '+err);
+    all_error = err;
+    cb(err.toString('utf8')+'\nERROR: child.listen_print '+get_string(commandWithOption));
+  });
+
+  process.on('close', function (code) {
+    // console.log('child process exited with code ' + code);
+    if (!all_error) { // избавляемся от повторного вызова callback
+      cb(null, 'child.listen_print '+get_string(commandWithOption));
+    }
+  });
+
+}
+exports.listen_print = listen_print;
 
 
 

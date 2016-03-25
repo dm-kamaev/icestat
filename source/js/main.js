@@ -556,12 +556,16 @@ function getDateRange() {
     return result;
 }
 
-//datesingle
+
+// DateSingle –– если, выбор конкретной даты
 function initDateSingle(callback) {
     var picker = $("#dpSingle").datepicker({
         format: 'yyyy-mm-dd',
         autoclose: true,
-        todayHighlight: true
+        todayHighlight: true,
+        // maxDate: new Date()
+        // minDate:(0),
+        // maxDate:(365)
     });
 
     var yesterday = moment().subtract(1,'days').format('YYYY-MM-DD');
@@ -572,6 +576,8 @@ function initDateSingle(callback) {
     });
 }
 
+
+// получить конретную дату из поля DateSingle(datepicker)
 function getSingleDate() {
    var datetime = $('#dpSingle').datepicker('getDate').valueOf();
    var strDateTime = moment(datetime).format("YYYY-MM-DD");
@@ -597,19 +603,6 @@ function dtButtons(name) {
             title: getExportFileName(name)
         },
         'colvis' // позволяет какие из колонок показывать, а какие нет
-        // {
-        //   extend: 'colvis',
-        //   action: function (e) {
-        //     var html = '';
-        //     html += '<ul class="dt-button-collection dropdown-menu" style="top: 600px; left: 463.867px;">';
-        //       html = '<li class="dt-button buttons-columnVisibility active" tabindex="0" aria-controls="table_peak_listeners">';
-        //         html += '<a>Date</a>';
-        //       html += '</li>';
-        //     html += '</ul>';
-        //     document.getElementById('id').innerHTML = html;
-        //   }
-
-        // }
     ];
 }
 

@@ -20,7 +20,7 @@ function red (str) {
 }
 exports.red = red;
 
-
+// TODO: заменить dark_blue на get_dark_blue
 function dark_blue (str) {
   return '\033[34m'+str+'\033[39m'; //текст будет синий
 }

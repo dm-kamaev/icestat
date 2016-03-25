@@ -61,8 +61,9 @@ router.post('/', function(req, res, next) {
         } else {
             for (var i = 0; i < data.Records.length; i++) {
                 var ratio = 0;
-                if (i + 1 < data.Records.length)
-                    ratio = data.Records[i + 1].count - data.Records[i].count;
+                if (i + 1 < data.Records.length) {
+                  ratio = data.Records[i + 1].count - data.Records[i].count;
+                }
                 data.Records[i].ratio = ratio;
             }
             res.json({ data: data.Records, recordsTotal: data.TotalRecordCount, recordsFiltered: data.TotalRecordCount });

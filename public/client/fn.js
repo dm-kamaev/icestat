@@ -91,16 +91,35 @@ var fn = (function () {
     return res;
   };
 
+
   // var ar = [1, 2, 3];
-  // var sum = reduce(ar, function(res, el) {
+  // var sum = reduce(ar, function(res, i, el) {
   //   return res + el;
   // }, '');
   // console.log(sum);
   // ВНИМАНИЕ С ТИПА ДАННЫХ: ТУТ ЛИБО ВСЕ СТРОКИ НА ВЫХОД, ЛИБО ЧИСЛА
   // ДЛЯ ПУСТОЙ СТРОКИ, NULL, UNDEFINED НЕ СРАБОТАЕТ CALLBACK!!!!
-  // res –– стартовая сумма, если это число то все будет обрабатываться как числа, если строка,
+  // res –– стартовая сумма, если это число, то все будет обрабатываться как числа, если строка,
   // то как строки
   var reduce = function (array, cb, res) {
+    for (var i = 0, l = array.length; i < l; i++) {
+      var el = array[i];
+      if (el || el === 0) {res = cb(res, i, el);}
+    }
+    return res;
+  };
+
+
+  // var ar = [1, 2, 3];
+  // var sum = reduce_value(ar, function(res, el) {
+  //   return res + el;
+  // }, '');
+  // console.log(sum);
+  // ВНИМАНИЕ С ТИПА ДАННЫХ: ТУТ ЛИБО ВСЕ СТРОКИ НА ВЫХОД, ЛИБО ЧИСЛА
+  // ДЛЯ ПУСТОЙ СТРОКИ, NULL, UNDEFINED НЕ СРАБОТАЕТ CALLBACK!!!!
+  // res –– стартовая сумма, если это число, то все будет обрабатываться как числа, если строка,
+  // то как строки
+  var reduce_value = function (array, cb, res) {
     for (var i = 0, l = array.length; i < l; i++) {
       var el = array[i];
       if (el || el === 0) {res = cb(res, el);}
@@ -165,6 +184,42 @@ var fn = (function () {
 
 
   // ПАТТЕРН ИСПОЛЬЗОВАНИЯ
+  // var res = search_in_obj({'Hello': 'world', 'Vasya': 'Petya'}, function(key, value) {
+  //   return (key === 'Hello') ? value : false;
+  // });
+  // console.log(res);
+  // ИЩЕТ В ОБЪЕКТЕ ЭЛЕМЕНТ УДОВЛЕТВОРЯЮЩИЙ УСЛОВИЮ И СРАЗУ ВОЗВРАЩАЕТ ЕГО
+  var search_in_obj = function (obj, cb) {
+    for (var key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        var res = cb(key, obj[key]);
+        if (res) { return res; }
+      }
+    }
+    return null;
+  };
+
+
+  // ПАТТЕРН ИСПОЛЬЗОВАНИЯ
+  // var res = search_in_obj(['Hello', 'world', 'Vasya', 'Petya'], function(i, el) {
+  //   return (el === 'Vasya') ? i : false;
+  // });
+  // console.log(res);
+  // ИЩЕТ В МАССИВЕ ЭЛЕМЕНТ УДОВЛЕТВОРЯЮЩИЙ УСЛОВИЮ И СРАЗУ ВОЗВРАЩАЕТ ЕГО
+  // ДЛЯ ПУСТОЙ СТРОКИ, NULL, UNDEFINED НЕ СРАБОТАЕТ CALLBACK!!!!
+  var search_in_array = function (array, cb) {
+    for (var i = 0, l = array.length; i < l; i++) {
+      var el = array[i];
+      if (el || el === 0) {
+        var res = cb(i, el);
+        if (res) { return res; }
+      }
+    }
+    return null;
+  };
+
+
+  // ПАТТЕРН ИСПОЛЬЗОВАНИЯ
   // each({1: 'Hello', 'string': 2}, function(key, value) {
   //   console.log(key, value);
   // });
@@ -190,16 +245,19 @@ var fn = (function () {
   };
 
   return {
-    'foreach'       : foreach,
-    'foreach_value' : foreach_value,
-    'map'           : map,
-    'map_value'     : map_value,
-    'map_object'    : map_object,
-    'reduce'        : reduce,
-    'filter'        : filter,
-    'every'         : every,
-    'some'          : some,
-    'each'          : each,
-    'each_value'    : each_value,
+    'foreach'        : foreach,
+    'foreach_value'  : foreach_value,
+    'each'           : each,
+    'each_value'     : each_value,
+    'map'            : map,
+    'map_value'      : map_value,
+    'map_object'     : map_object,
+    'reduce'         : reduce,
+    'reduce_value'   : reduce_value,
+    'filter'         : filter,
+    'every'          : every,
+    'some'           : some,
+    'search_in_array': search_in_array,
+    'search_in_obj'  : search_in_obj,
   };
 }());
