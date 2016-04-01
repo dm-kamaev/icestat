@@ -1,3 +1,5 @@
+// OLD CODE: БОЛЬШЕ НЕ ИСПОЛЬЗУЕТСЯ
+// TODO: Вынести в old/
 function requestUniqListenersChartData() {
     initDatepicker(sendUniqListenersRequest);
     sendUniqListenersRequest();

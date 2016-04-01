@@ -52,9 +52,10 @@ var api_songs_ratio = require('./routes/api/other/songs_ratio');
 var api_table_peak_listeners = require('./routes/api/listeners/table/peak');
 
 // МОЕ
-var api_peak_listeners_2     = require('./peak_test/peak_listeners.js');
-var api_songs_ratio_days     = require('/icestat/api/api_songs_ratio_days.js').router;
-var api_songs_ratio_songs    = require('/icestat/api/api_songs_ratio_songs.js').router;
+var api_peak_listeners_2  = require('./peak_test/peak_listeners.js');
+var api_songs_ratio_days  = require('/icestat/api/api_songs_ratio_days.js').router;
+var api_songs_ratio_songs = require('/icestat/api/api_songs_ratio_songs.js').router;
+var api_uniq              = require('/icestat/api/api_uniq.js').router;
 // var api_time_spent_listening = require('/icestat/api/api_time_spent_listening.js').router;
 
 var api_report_aqh = require('./routes/api/report/aqh');
@@ -160,9 +161,10 @@ app.use('/api/listeners/map/city', api_map_by_city_listeners);
 app.use('/api/listeners/table/peak', api_table_peak_listeners);
 
 // МОЕ
-app.use('/api/listeners/peak_all',           api_peak_listeners_2);
-app.use('/other/api_songs_ratio_days',       api_songs_ratio_days);
-app.use('/other/api_songs_ratio_songs',      api_songs_ratio_songs);
+app.use('/api/listeners/peak_all',       api_peak_listeners_2);
+app.use('/other/api_songs_ratio_days',   api_songs_ratio_days);
+app.use('/other/api_songs_ratio_songs',  api_songs_ratio_songs);
+app.use('/listeners/api_uniq',           api_uniq);
 // app.use('/reports/api_time_spent_listening', api_time_spent_listening);
 
 app.use('/api/report/aqh', api_report_aqh);

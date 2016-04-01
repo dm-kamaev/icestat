@@ -54,9 +54,9 @@ exports.playlist = playlist;
 
 // any_table('stations_dorognoe.hostingradio.ru', function(err, data) { console.log(err||data); });
 ////////////////////////////////////
-function any_table (database, callback) {
+function any_tables (database, callback) {
   var query = "SHOW TABLES IN `"+database+"`";
-  console.log(query);
+  // console.log(query);
   db.read(query, function(err, res) {
     var Tables = {};
     if (!err) {
@@ -68,7 +68,7 @@ function any_table (database, callback) {
     callback(err || null, Tables || null);
   });
 }
-exports.any_table = any_table;
+exports.any_tables = any_tables;
 
 
 

@@ -289,4 +289,3 @@ function get_range_date (start_date, end_date, max_days) {
   return res;
 }
 exports.get_range_date = get_range_date;
-

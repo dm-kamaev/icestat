@@ -5,6 +5,7 @@ var error  = console.error.bind(console);
 
 window.addEventListener('load', function(e) {
   setTimeout(function() {// ДЛЯ ТЕСТОВ, ПОТОМ УБРАТЬ
+    // show_uniq.start();
     // show_songs_ratio_days.start();
     // show_songs_ratio_songs.start();
     // showTSLReport();
@@ -56,6 +57,7 @@ function anyElementHash (obj) {
   }
 }
 
+
 /**
  * [_R description]
  * @param  string   –– u [url]
@@ -73,6 +75,7 @@ function _R(u, d, s, e, m) {
     t;
   if (r) {
     r.open((d) ? "POST" : "GET", u, true);
+    if (d) r.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); // для Express нужен заголовок, возможно требуется еще это charset=UTF-8 где-то
     r.onreadystatechange = function() {
       if (t) { /*Если запрос сработал сразу чистим таймер*/
         clearTimeout(t);
@@ -98,7 +101,21 @@ function _R(u, d, s, e, m) {
       }, m);
     }
     try {
-      r.send(d || null);
+      r.send(preparePostparams(d) || null);
+      // r.send(d || null);
     } catch (z) {}
   }
+}
+
+
+// превращаем {} в строку вида "k=v&k2=v2" для POST параметров
+function preparePostparams (obj) {
+  if (obj === null || obj === undefined || !(obj instanceof Object)) return false;
+  var res = ''; // "k=v&k2=v2"
+  for (var key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      res += key+'='+obj[key]+'&';
+    }
+  }
+  return res.replace(/&$/, '');
 }

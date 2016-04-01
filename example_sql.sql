@@ -1,5 +1,5 @@
 -- узнать список возможных потоков у данного радио
-SELECT count(*), mount FROM `stations_radiovera.hostingradio.ru`.`2016-03-04` GROUP BY mount
+SELECT COUNT(*), mount FROM `stations_radiovera.hostingradio.ru`.`2016-03-04` GROUP BY mount
 +------------+-------------------+
 |   count(*) | mount             |
 |------------+-------------------|
@@ -186,6 +186,11 @@ stations_radiovera.hostingradio.ru> SELECT DATE_FORMAT(date, '%Y-%m-%d') as date
 | 2016-03-07 | 1401049        |
 +------------+----------------+
 1401049/1178 = 1189,3455008 с / 60 = 19,822425013
+
+
+-- –––––––––––––––––––––––––––––––––––––––––––––––––––––– Unique
+
+SELECT COUNT(*) FROM `2016-03-27` WHERE mount='/dor_64_no' GROUP BY mount
 
 
 
