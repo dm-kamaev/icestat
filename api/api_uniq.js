@@ -117,9 +117,7 @@ function get_listeners_in_current_day (CONTEXT, cb_main) {
     var CONTEXT = add_params[0];
     var query = "SELECT ip, agent FROM `"+CONTEXT.get('station')+"`.`"+date+"` WHERE mount='"+CONTEXT.get('stream')+"'";
     // console.log(query)
-    db.read(query, function(err, res) {
-      cb(err || null, [date, res || null]);
-    });
+    db.read(query, function(err, res) { cb(err || null, [date, res || null]); });
   };
 
   asc.ar_series_with_params(get_data, CONTEXT.get('range_date'), [CONTEXT], function(err, res) {
@@ -131,6 +129,7 @@ function get_listeners_in_current_day (CONTEXT, cb_main) {
 
 // скаладываем всех слушателей радио за диапазон дат и вычисляем для этого диапазона дат
 // уникальных пользователей по ip and user-agent
+//  так же вычисляем total all listeners and all uniq
 // на входе uniqListeners_allListeners  –– {}
 // ны выходе uniqListeners_allListeners –– { 'stations_dorognoe.hostingradio.ru_2016-03-27_2016-03-27': { all: 33563, uniq: 11279 }, 'stations_blackstarradio.hostingradio.ru_2016-03-27_2016-03-27': { all: 259018, uniq: 19989 } }
 // data    –– [ [ '2016-03-27', [ {ip: '195.16.111.67', agent: 'RadioVERA/2.1.0'}, ... ], ... ]
@@ -141,8 +140,8 @@ function prepare_listeners (CONTEXT) {
 
   var temp_uniq = {},  // временно храним уникальных пользователей
       key       = station+'_'+CONTEXT.get('start_date')+'_'+CONTEXT.get('end_date');
-  res[key]     = {};
-  res[key].all = 0;
+  res[key]      = {};
+  res[key].all  = 0;
   for (var i = 0, l = data.length; i < l; i++) {
     var date              = data[i][0],
         listeners_by_date = data[i][1],

@@ -101,21 +101,31 @@ var show_uniq = (function () {
     var data                    = CONTEXT.get('data'),
         stationsRadio_radioName = CONTEXT.get('stationsRadio_radioName'),
         range_date              = CONTEXT.get('start_date')+'_'+CONTEXT.get('end_date'),
-        view_range_date         = CONTEXT.get('view_range_date');
+        view_range_date         = CONTEXT.get('view_range_date'),
+        sum_all_listeners       = 0, // сумма всех слушателей для всех выбранных радио
+        sum_uniq_listeners      = 0; // сумма всех уникальных слушателей для всех выбранных радио
     html += '<table id=table_data class="table table-striped table-bordered">';
       html += '<tr>';
         html += '<th>Date</th>';
         fn.foreach_value(stationsRadio_radioName, function(radio) {
-        html += '<th>'+radio[1]+' All</th>';
+        html += '<th>'+radio[1]+' Listeners</th>';
         html += '<th>'+radio[1]+' Unique</th>';
         });
+        html += '<th>All Listeners</th>';
+        html += '<th>All Unique</th>';
       html += '<tr>';
-        html += '<td>'+view_range_date+'</td>';
+        html += '<td><span style="white-space:nowrap">'+view_range_date+'</span></td>';
         fn.foreach_value(stationsRadio_radioName, function(radio) {
-        var key = radio[0]+'_'+range_date;
-        html += '<td>'+data[key].all+'</td>';
-        html += '<td>'+data[key].uniq+'</td>';
+        var key  = radio[0]+'_'+range_date,
+            all  = data[key].all,
+            uniq = data[key].uniq;
+        sum_all_listeners  += all;
+        sum_uniq_listeners += uniq;
+        html += '<td>'+separate_discharges(all)+'</td>';
+        html += '<td>'+separate_discharges(uniq)+'</td>';
         });
+       html += '<td>'+separate_discharges(sum_all_listeners)+'</td>';
+       html += '<td>'+separate_discharges(sum_uniq_listeners)+'</td>';
     html+= '</table>';
     return html;
   }
@@ -150,5 +160,9 @@ var show_uniq = (function () {
       return data[radio[0]+'_'+range_date].uniq;
     });
   }
+
+
+  // отделяем разряды чисел было 10200 стало 10 200
+  function separate_discharges (str) {  return str.toString().replace(/(\d)(?=(\d{3})+$)/g, '$1 '); }
 
 }());
