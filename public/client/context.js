@@ -37,7 +37,7 @@ var add_methods_context = (function () {
     return function(key, val) {
       if(this[key]) {
         // my_util.process_err('context.set Error:', 'Try twice set context.set.'+key+' '+info(this));
-        console.log('context.set Error:', 'Try twice set context.set.'+key+' '+ this);
+        console.trace('context.set Error:', 'Try twice set context.set.'+key+' '+ this);
       } else {
         this[key] = val;
       }

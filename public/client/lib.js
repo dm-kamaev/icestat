@@ -95,10 +95,10 @@ function _R(u, d, s, e, m) {
     if (e) {
       r.onerror = e; /*назначаем обработчик ошибок для самого AJAX*/
       m = m || 5000;
-      t = setTimeout(function() { /*Если через 5с скрипт не ответил, то обрываем соединение и вызываем функцию обработчик*/
+      /*t = setTimeout(function() { //Если через 5с скрипт не ответил, то обрываем соединение и вызываем функцию обработчик
         r.abort();
         e(m);
-      }, m);
+      }, m);*/
     }
     try {
       r.send(preparePostparams(d) || null);
@@ -118,4 +118,37 @@ function preparePostparams (obj) {
     }
   }
   return res.replace(/&$/, '');
+}
+
+
+// из строки сделать hash
+function crH(a, x, h) {
+  h = {};
+  setArray(a, function(i, v, s) {
+    s = v.split(x);
+    if (s[0] && s[1]) {
+      h[s[0]] = s[1];
+    }
+  });
+  return h;
+}
+
+
+// setCookie('show_lead_status', 'hide', 4, '/', window.location.hostname);
+// n –– кол-во дней
+function setCookie(o, e, n, t, a) {
+  var i = o + "=" + encodeURIComponent(e);
+  if ("number" != typeof n) throw new Error(" Параметр daysToLive должен быть числом. ");
+  i += "; max-age=" + 60 * n * 60 * 24; i += "; path=" + t; i += "; domain=" + a; i += ";"; document.cookie = i;
+}
+
+function getCookie(){return crH(D.cookie.split(/;\s*/),"=");}
+
+
+function setArray(a, f) {
+  for (var i = 0, l = a.length; i < l; i++) {
+    if (a[i] !== undefined) {
+      f(i, a[i]);
+    }
+  }
 }
