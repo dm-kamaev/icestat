@@ -1,11 +1,20 @@
 function requestListenersWhenStopChartData() {
-    initDatepicker(sendListenersWhenStopRequest);
-    sendListenersWhenStopRequest();
+    // initDatepicker(sendListenersWhenStopRequest);
+    var cookies = getCookie();
+    work_daterangepicker.init_datepicker(cookies.start_date, cookies.end_date); // вставляем в календарь даты из cook, либо вчерашний –– позавчерашний день
+    // TODO: костыль в будущем надо перейти на TREE по DOM
+    getByID('main').insertAdjacentHTML('beforeEnd', '<div id="main_1" style="margin-top:20px;text-align:center"><button type="button" style="width:25%;font-size:140%;" class="btn btn-success">Get data</button></div>');
+    getByID('main_1').onclick = sendListenersWhenStopRequest;
+    // sendListenersWhenStopRequest();
 }
 
 function sendListenersWhenStopRequest() {
+    getByID('main_1').innerHTML = ''; // убираем кнопку
+    // вешаем функцию на изменение даты
+    work_daterangepicker.changed_datepicker(sendListenersWhenStopRequest);
     setHighchartUseUTC(true);
     var range = getDateRange();
+    work_cookie.set_range(range); // добавляем в cookie диапазаон дат
     $.post('/api/listeners/when/stop',
            {
                startDate: range[0],

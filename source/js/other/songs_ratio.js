@@ -1,3 +1,4 @@
+// OLD CODE: ПЕРЕНЕСТИ В ПАПКУ OLD
 var mSongsRatioMount;
 function requestOtherSongsRatioData() {
     initDateSingle(sendOtherSongsRatioRequest);

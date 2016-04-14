@@ -19,8 +19,13 @@ var show_peak_listeners_page = (function () {
     // Вставка поля выбора дат и каркас для графиков и таблицы
     $.get("/listeners/peak",  function(data, status){
       $(".container").html(data);
-      initDatepicker(build_page_peak_listeners); // вешаем обработчик для календаря
-      build_page_peak_listeners();
+      // initDatepicker(build_page_peak_listeners); // вешаем обработчик для календаря
+      var cookies = getCookie();
+      work_daterangepicker.init_datepicker(cookies.start_date, cookies.end_date); // вставляем в календарь даты из cook, либо вчерашний –– позавчерашний день
+      // TODO: костыль в будущем надо перейти на TREE по DOM
+      getByID('main').insertAdjacentHTML('beforeEnd', '<div id="main_1" style="margin-top:20px;text-align:center"><button type="button" style="width:25%;font-size:140%;" class="btn btn-success">Get data</button></div>');
+      getByID('main_1').onclick = build_page_peak_listeners;
+      // build_page_peak_listeners();
     });
   };
   // ЭКСПОРТИРУЕМ СТАРТОВУЮ ФУНКЦИЮ
@@ -29,6 +34,9 @@ var show_peak_listeners_page = (function () {
 
 // ---------------------------------------------------------------------------------------
   function build_page_peak_listeners() {
+    getByID('main_1').innerHTML = ''; // убираем кнопку
+    // вешаем функцию на изменение даты
+    work_daterangepicker.changed_datepicker(build_page_peak_listeners);
     var CONTEXT = add_methods_context({});
     // заново иницилизуруем таблицу и checkbox
     clean_checkboxTable();
@@ -38,7 +46,7 @@ var show_peak_listeners_page = (function () {
     var range     = getDateRange(),
         mountList = getSelectedMounts();
     CONTEXT.set('mountList', mountList);
-
+    work_cookie.set_range(range); // добавляем в cookie диапазаон дат
     var chart = $('#chart_peak_listeners').highcharts();
     chart.showLoading();
 

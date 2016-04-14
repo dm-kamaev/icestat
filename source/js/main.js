@@ -516,13 +516,17 @@ function initDatepicker(callback) {
     // initDiffDatepicker(callback, 17); // для тестов (16 февраля)
 }
 
+
+// bootstrap datepicker
 // Вешаем на календарь обработчик, если user изменил время
 // заново вызываем функцию
 function initDiffDatepicker(callback, days) {
     var picker = $(".input-daterange").datepicker({
         format: 'yyyy-mm-dd',
         autoclose: true,
-        todayHighlight: true
+        todayHighlight: true,
+        weekStart: 1,  // неделя начинается Monday
+        endDate: '-1d',// заблокировать выбор текущего дня и времени в будущем
     });
 
     // определяет default дни для показа данных
@@ -557,15 +561,15 @@ function getDateRange() {
 }
 
 
+// bootstrap datepicker
 // DateSingle –– если, выбор конкретной даты
 function initDateSingle(callback) {
     var picker = $("#dpSingle").datepicker({
         format: 'yyyy-mm-dd',
         autoclose: true,
         todayHighlight: true,
-        // maxDate: new Date()
-        // minDate:(0),
-        // maxDate:(365)
+        weekStart: 1,  // неделя начинается Monday
+        endDate: '-1d',// заблокировать выбор текущего дня и времени в будущем
     });
 
     var yesterday = moment().subtract(1,'days').format('YYYY-MM-DD');

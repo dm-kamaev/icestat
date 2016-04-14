@@ -5,6 +5,7 @@
 /*jshint expr: true */
 /*jshint esnext: true */
 
+// OLD CODE: БОЛЬШЕ НЕ ИСПОЛЬЗУЕТСЯ переместить в папку old/
 // TODO: в будущем избавиться
 var CONTEXT = add_methods_context({});
 
