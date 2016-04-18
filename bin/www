@@ -20,6 +20,7 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
+server.timeout = 0; // отключаем timeout для http requests, ибо большие данные иногда не успевают доехать
 
 /**
  * Listen on provided port, on all network interfaces.

@@ -59,24 +59,23 @@ router.post('/', function(req, res, next) {
 function start (params, start_date, end_date, ext_cb) {
   console.time('Time');
   var range_data = time.get_range_date(start_date, end_date, MAX_DAY);
-  // total_seconds_of_period ––  хэш, куда будем складывать все данные
-  var info = { start_date: start_date, end_date: end_date, total_seconds_of_period: {} };
-  asc.ar_series_with_params(for_each_station, params, info, function(err, res) {
+  var total_seconds_of_period = {}; // хэш, куда будем складывать все данные
+  asc.ar_series_with_params(for_each_station, params, [start_date, end_date, total_seconds_of_period], function(err, res) {
     var answer = {};
-    if (!err) { answer = calc_total(info.total_seconds_of_period, params, range_data); }
+    if (!err) { answer = calc_total(total_seconds_of_period, params, range_data); }
     console.timeEnd('Time');
     ext_cb(err || null, answer);
   });
 }
 
 
-function for_each_station (radio, info, callback) {
+function for_each_station (radio, additional_params, callback) {
   var CONTEXT = require('/icestat/my/context.js').add_set_get({});
   CONTEXT.set('station', radio.db);
   CONTEXT.set('stream',  radio.mount);
-  CONTEXT.set('start_date',  info.start_date);
-  CONTEXT.set('end_date',    info.end_date);
-  CONTEXT.set('total_seconds_of_period', info.total_seconds_of_period);
+  CONTEXT.set('start_date',  additional_params[0]);
+  CONTEXT.set('end_date',    additional_params[1]);
+  CONTEXT.set('total_seconds_of_period', additional_params[2]);
   // console.log(CONTEXT.get('station'), CONTEXT.get('stream'), CONTEXT.get('start_date'), CONTEXT.get('end_date'));
   asc.series_move_data([
     (cbm) => { stations_get_exist_tables(CONTEXT, cbm); },
@@ -253,7 +252,7 @@ function test_start () {
       // { db: 'radiovera.hostingradio.ru',  mount: '/radiovera64.aacp' },
       // { db: 'blackstarradio.hostingradio.ru', mount: '/blackstarradio128.mp3' }
     ],
-    '2016-04-03',
+    '2016-03-03',
     '2016-04-03',
     // '2016-04-04',
     function(err, result) {

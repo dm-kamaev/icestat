@@ -131,6 +131,7 @@ SELECT date, duration FROM `2016-03-22` WHERE mount='/dor_64_no' AND duration>=8
 
 --  кол-во слушателей в сутках
 SELECT COUNT(*) FROM `2016-03-22` WHERE mount='/dor_64_no'
+SELECT COUNT(*) FROM `chameleon-dorognoe-aachq`.`2016-04-03` WHERE mount='/dorognoe64.aacp'
 +------------+
 |   COUNT(*) |
 |------------|
@@ -192,6 +193,40 @@ stations_radiovera.hostingradio.ru> SELECT DATE_FORMAT(date, '%Y-%m-%d') as date
 
 SELECT COUNT(*) FROM `2016-03-27` WHERE mount='/dor_64_no' GROUP BY mount
 
+-- Показать все потоки для радио
+stations_dorognoe.hostingradio.ru> SELECT mount, COUNT(*) FROM `2016-03-27` GROUP BY mount;
++--------------------------------------+------------+
+| mount                                |   COUNT(*) |
+|--------------------------------------+------------|
+| /dorognoe                            |      42259 |
+| /dorognoe.smi                        |          1 |
+| /dorognoe1945.mp3                    |       1994 |
+| /dorognoewithoutadvertising          |         30 |
+| /dorognoe_acc                        |       2385 |
+| /dor_64_no                           |      33563 |
+| /player/css                          |          2 |
+| /player/script                       |          1 |
+| /radio                               |      48771 |
+| /style.css                           |          1 |
+| http://dorognoe.hostingradio.ru:8000 |          1 |
++--------------------------------------+------------+
+
+-- Показать радио по url
+-- по id можно найти потоки в таблице mounts для этого радио
+icestat_management> SELECT * FROM  stations WHERE url="http://dorognoe.hostingradio.ru:8000/status_stream.xsl" \G
+***************************[ 1. row ]***************************
+id           | 223
+name         | Дорожное
+url          | http://dorognoe.hostingradio.ru:8000/status_stream.xsl
+ftp_host     | dorognoe.hostingradio.ru/log
+ftp_username | dorognoe
+ftp_password | dorognoe11==
+update_db    | 1
+
+
+
+
+
 
 
 
@@ -228,5 +263,55 @@ station_id | 22
 name       | radiovera-64aac
 mount      | /radiovera64.aacp
 
--- добавить пользователю test2 возможность смотреть радио
+-- добавить пользователю test2 возможность смотреть радио radiovera-64aac
 INSERT INTO permissions SET user_id=10, mount_id=261, selected=1;
+-- удалить у пользвателя радио
+!DELETE FROM permissions WHERE user_id=10 AND mount_id=261 AND selected=0;
+
+
+-- поискать радио по имени
+icestat_management> SELECT * FROM mounts WHERE name="chameleon-dorognoe-mp3hq"  \G
+***************************[ 1. row ]***************************
+id         | 23
+station_id | 198
+name       | chameleon-dorognoe-mp3hq
+mount      | /dorognoe128.mp3
+
+-- добавить пользователю test2 возможность смотреть радио chameleon-dorognoe-mp3hq
+INSERT INTO permissions SET user_id=10, mount_id=23, selected=1;
+
+-- поискать радио по имени
+icestat_management> SELECT * FROM mounts WHERE name="chameleon-dorognoe-aachq"  \G
+***************************[ 1. row ]***************************
+id         | 24
+station_id | 198
+name       | chameleon-dorognoe-aachq
+mount      | /dorognoe64.aacp
+
+-- добавить пользователю test2 возможность смотреть радио chameleon-dorognoe-mp3hq
+INSERT INTO permissions SET user_id=10, mount_id=24, selected=1;
+
+-- поискать потоки по названию
+icestat_management> SELECT * FROM mounts WHERE name LIKE 'emg-europaplus%'
++------+--------------+--------------------------------+----------------------+
+|   id |   station_id | name                           | mount                |
+|------+--------------+--------------------------------+----------------------|
+|  235 |           65 | emg-europaplus-256mp3          | /europaplus256.mp3   |
+|  236 |          106 | emg-europaplus-128mp3          | /ep128               |
+|  237 |           36 | emg-europaplusTOP40-128mp3     | /eptop128            |
+|  238 |          184 | emg-europaplusLight-128mp3     | /ep-light128.mp3     |
+
+
+
+INSERT INTO permissions SET user_id=10, mount_id=235, selected=0;
+INSERT INTO permissions SET user_id=10, mount_id=236, selected=0;
+INSERT INTO permissions SET user_id=10, mount_id=237, selected=0;
+INSERT INTO permissions SET user_id=10, mount_id=238, selected=0;
+INSERT INTO permissions SET user_id=10, mount_id=239, selected=0;
+INSERT INTO permissions SET user_id=10, mount_id=240, selected=0;
+INSERT INTO permissions SET user_id=10, mount_id=241, selected=0;
+INSERT INTO permissions SET user_id=10, mount_id=242, selected=0;
+INSERT INTO permissions SET user_id=10, mount_id=243, selected=0;
+INSERT INTO permissions SET user_id=10, mount_id=244, selected=0;
+INSERT INTO permissions SET user_id=10, mount_id=245, selected=0;
+INSERT INTO permissions SET user_id=10, mount_id=246, selected=0;

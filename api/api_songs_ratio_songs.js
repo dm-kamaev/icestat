@@ -9,7 +9,8 @@
 
 "use strict";
 
-// ОПИСАНИЕ СКРИПТА
+// СЧИТАЕМ КОЛ-ВО ПОЛЬЗОВАТЕЛЕЙ ДЛЯ КАЖДОЙ ПЕСНИ НА НАЧАЛО И ЧЕРЕЗ 15 СЕКУНД,
+// А ТАК ЖЕ СКОЛЬКО РАЗ ОНА ИГРАЛА ЗА ДЕНЬ
 
 var CONF  = require('/icestat/config.js').settings();
 var asc   = require(CONF.my_modules + 'asc');
@@ -96,7 +97,10 @@ function calc_total_and_ratio (playlist_data_from_base) {
     res[key].total_value_listeners_start_song += song.value_listeners_start_song;
     // if (key === 'АНЖЕЛИКА ВАРУ') { console.log('after 15c ADD in', res[key].total_value_listeners_after_15s, ' + ',  song.value_listeners_after_15s) }
     res[key].total_value_listeners_after_15s  += song.value_listeners_after_15s;
-    res[key].ratio_percent                    =  (res[key].total_value_listeners_after_15s / res[key].total_value_listeners_start_song * 100 - 100).toFixed(2);
+    // Эта формула эквивалента формуле ниже: вычиатем 100 как бы принимая предыдущие значение за 100
+    // , но как вывести алгебраически не могу. Сделать позже
+    // res[key].ratio_percent                    =  (res[key].total_value_listeners_after_15s / res[key].total_value_listeners_start_song * 100 - 100).toFixed(2);
+    res[key].ratio_percent                    =  ((res[key].total_value_listeners_after_15s - res[key].total_value_listeners_start_song) / res[key].total_value_listeners_start_song * 100).toFixed(2);
   }
   // console.log(res);
   return res;
