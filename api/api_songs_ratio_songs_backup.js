@@ -68,21 +68,22 @@ function for_each_station (radio, info, callback) {
   CONTEXT.set('start_date', info.start_date);
   CONTEXT.set('end_date',   info.end_date);
   CONTEXT.set('end_result', info.end_result);
-  console.log(radio.db, radio.stream, info.start_date, info.end_date);
+  // console.log(radio.db, radio.stream, info.start_date, info.end_date);
   asc.series_move_data([
     (cbm) => { Get_exist_tb.in_playlist(CONTEXT, cbm); },
     (cbm) => { Get_exist_tb.in_stations(CONTEXT, cbm); },
     (cbm) => { cbm(null, check_range_date.in_playlist(CONTEXT, MAX_DAY), 'check_range_date.in_playlist'); },
     (cbm, range_date_in_playlist) => { get_data_from_playlist(CONTEXT, range_date_in_playlist, cbm); },
-    (cbm) => { CONTEXT.set('order_songs', get_order_songs(CONTEXT));  cbm(null, 'get_order_songs'); },
     (cbm) => { cbm(null, check_range_date.in_stations(CONTEXT, MAX_DAY), 'check_range_date.in_stations'); },
     (cbm, range_date_in_stations) => { get_data_from_stations(CONTEXT, range_date_in_stations, cbm); },
-    // (cbm) => { cbm(null, calc_listeners_startSong_after15s(CONTEXT), 'calc_listeners_startSong_after15s'); },
+    (cbm) => { cbm(null, calc_listeners_startSong_after15s(CONTEXT), 'calc_listeners_startSong_after15s'); },
+    (cbm, val_listeners_startSong_after15s) => { CONTEXT.set('data', calc_total_and_ratio(val_listeners_startSong_after15s)), cbm(null, 'calc_total_and_ratio'); },
+    (cbm) => { CONTEXT.set('order_songs', get_order_songs(CONTEXT.get('data'))), cbm(null, 'get_order_songs'); },
     ],function(err, result) {
       // console.log(CONTEXT.get('in_stations'));
       // console.log(CONTEXT.get('in_playlist'));
       // console.log(CONTEXT.get('range_date_in_playlist'));
-      info.end_result = { data: CONTEXT.get('data_from_playlist'), order_songs: CONTEXT.get('order_songs') };
+      info.end_result = { data: CONTEXT.get('data'), order_songs: CONTEXT.get('order_songs') };
       // console.log(info.end_result);
       // console.log(info.order_songs);
       var who = 'radio = '+radio.db+', stream = '+radio.stream;
@@ -98,7 +99,7 @@ function for_each_station (radio, info, callback) {
 // range_date –
 function get_data_from_playlist (CONTEXT, range_date, cb_main) {
   var queries = [];
-  CONTEXT.set('data_from_playlist', {});
+  CONTEXT.set('data_from_playlist', []);
   for (var i = 0, l = range_date.length; i < l; i++) {
     var date = range_date[i];
     if (CONTEXT.get('in_playlist')[date]) {
@@ -109,14 +110,12 @@ function get_data_from_playlist (CONTEXT, range_date, cb_main) {
   }
   var read = function(query, cb) {
     db.read(query, function(err, res) {
-      if (!err) { console.log(query); prepare_data_for_playlist(CONTEXT, res); }
+      if (!err) { prepare_data_for_playlist(CONTEXT, res); }
       cb(err || null, null);
     });
   };
   asc.ar_series(read, queries, function(err, res) {
     // if (!err) { console.log(CONTEXT.get('data_from_playlist'));  }
-    // console.log(CONTEXT.get('data_from_playlist')['Скруджи::::Ровной Дороги'])
-    // global.process.exit();
     cb_main(err || null, 'get_data_from_playlist');
   });
 }
@@ -124,9 +123,7 @@ function get_data_from_playlist (CONTEXT, range_date, cb_main) {
 
 // data –– [{ date: Sat Apr 23 2016 19:22:03 GMT+0300 (MSK), mount: '/blackstarradio128.mp3', author: 'Мот', song_name: 'Понедельник вторник' }, ]
 // data_from_playlist –– [ { start_song_ms: Sat Apr 23 2016 23:00:20 GMT+0300 (MSK), after_15s_ms: Sat Apr 23 2016 23:00:35 GMT+0300 (MSK), author: 'Michael Woods', song_name: 'Easy Tiger', mount: '/blackstarradio128.mp3' }, ]
-// data_from_playlist –– { 'Lil Wayne::::Nothing But Trouble (ft. Charlie Puth)':  { start_song_ms: Fri Apr 22 2016 14:23:09 GMT+0300 (MSK), after_15s_ms: Fri Apr 22 2016 14:23:24 GMT+0300 (MSK), value_play: 1 }, 'Тимати::::Потанцуй со мной':  { start_song_ms: Fri Apr 22 2016 14:26:53 GMT+0300 (MSK), after_15s_ms: Fri Apr 22 2016 14:27:08 GMT+0300 (MSK), value_play: 1 }, ... }
 function prepare_data_for_playlist (CONTEXT, data) {
-  var data_from_playlist = CONTEXT.get('data_from_playlist');
   for (var i = 0, l = data.length; i < l; i++) {
     var song         = data[i],
         date         = time.get(song.date),
@@ -135,24 +132,16 @@ function prepare_data_for_playlist (CONTEXT, data) {
 
     var after_15s_ms  = after_15s_s * 1000;
     after_15s_ms      = (date.day === time.get(after_15s_ms).day) ? after_15s_ms : null;
-    var key  = song.author+'::::'+song.song_name;
-    if (!data_from_playlist[key]) {
-      data_from_playlist[key] = {
-        // start_song_ms : date.in_ms,
-        // after_15s_ms  : after_15s_ms,
-        song_time     : [ [date.in_ms, after_15s_ms] ],
-        // song_time     : [ [new Date(date.in_ms), new Date(after_15s_ms)] ],
-        // date          : song.date,
-        // author        : song.author,
-        // song_name     : song.song_name,
-        // mount         : song.mount,
-        value_play    : 1,
-      };
-    } else {
-      data_from_playlist[key].value_play++;
-      data_from_playlist[key].song_time.push([ new Date(date.in_ms), new Date(after_15s_ms) ]);
-      // data_from_playlist[key].song_time.push([ new Date(date.in_ms), new Date(after_15s_ms) ]);
-    }
+    CONTEXT.get('data_from_playlist').push({
+      start_song_ms : date.in_ms,
+      after_15s_ms  : after_15s_ms,
+      // date          : song.date,
+      // start_song_ms : new Date(date.in_ms),
+      // after_15s_ms  : new Date(after_15s_ms),
+      author        : song.author,
+      song_name     : song.song_name,
+      mount         : song.mount,
+    });
   }
 }
 
@@ -160,122 +149,47 @@ function prepare_data_for_playlist (CONTEXT, data) {
 // range_date –
 function get_data_from_stations (CONTEXT, range_date, cb_main) {
   var queries = [];
+  CONTEXT.set('data_from_stations', []);
 
   for (var i = 0, l = range_date.length; i < l; i++) {
     var date = range_date[i];
     if (CONTEXT.get('in_stations')[date]) {
       queries.push("SELECT UNIX_TIMESTAMP(date) as end_listen_s, mount, duration FROM `stations_"+CONTEXT.get('database')+"`.`"+date+"` WHERE mount='"+CONTEXT.get('stream')+"' ORDER BY end_listen_s ASC");
-      // queries.push("SELECT UNIX_TIMESTAMP(date) as end_listen_s, mount, duration FROM `stations_"+CONTEXT.get('database')+"`.`"+date+"` WHERE mount='"+CONTEXT.get('stream')+"'");
     } else {
       console.log('Warning: Не существует таблицы из stations_'+CONTEXT.get('station')+' с такой датой => '+date);
     }
   }
   var read = function(query, cb) {
     db.read(query, function(err, res) {
-      if (!err) { console.log('////////////'); console.log(query); prepare_data_for_stations(CONTEXT, res); }
+      if (!err) { prepare_data_for_stations(CONTEXT, res); }
       cb(err || null, null);
     });
   };
-  asc.ar_series(read, queries, function(err, res) { cb_main(err || null, 'get_data_from_stations'); });
-}
-
-
-// stations_data –– [ { start_listen_ms: Sat Apr 23 2016 10:10:15 GMT+0300 (MSK), end_listen_ms: Sat Apr 23 2016 10:10:32 GMT+0300 (MSK),  mount: '/blackstarradio128.mp3', duration_ms: 17000 }, ]
-// data_from_playlist –– { 'Lil Wayne::::Nothing But Trouble (ft. Charlie Puth)':  { start_song_ms: Fri Apr 22 2016 14:23:09 GMT+0300 (MSK), after_15s_ms: Fri Apr 22 2016 14:23:24 GMT+0300 (MSK), value_play: 1 }, 'Тимати::::Потанцуй со мной':  { start_song_ms: Fri Apr 22 2016 14:26:53 GMT+0300 (MSK), after_15s_ms: Fri Apr 22 2016 14:27:08 GMT+0300 (MSK), value_play: 1 }, ... }
-// изменили объект data_from_playlist –– { { 'Lea Rue::::I Can\'t Say No': { start_song_ms: 1461272422000, after_15s_ms: 1461272437000, value_play: 2, value_listeners_start_song: 293, value_listeners_after_15s: 306, ratio: 13 },от::::Кислород (ft. ВИА Гра)':  start_song_ms: 1461272585000, after_15s_ms: 1461272600000, value_play: 2, value_listeners_start_song: 273, value_listeners_after_15s: 253, ratio: -20 }, ... }
-function prepare_data_for_stations (CONTEXT, stations_data) {
-  var playlist_data  = CONTEXT.get('data_from_playlist'), authorsSong_names = Object.keys(playlist_data);
-  for (var i = 0, l = authorsSong_names.length; i < l; i++) {
-    var authorSong_name = authorsSong_names[i],
-        song            = playlist_data[authorSong_name],
-        songs_time      = playlist_data[authorSong_name].song_time;
-    if (!playlist_data[authorSong_name].value_listeners_start_song) { playlist_data[authorSong_name].value_listeners_start_song = 0; }
-    if (!playlist_data[authorSong_name].value_listeners_after_15s)  { playlist_data[authorSong_name].value_listeners_after_15s = 0; }
-    if (!playlist_data[authorSong_name].ratio_percent)              { playlist_data[authorSong_name].ratio_percent = 0; }
-    for (var k = 0, l2 = songs_time.length; k < l2; k++) {
-      var song_time = songs_time[k],
-          start_song_ms = song_time[0],
-          after_15s_ms  = song_time[1];
-      for (var j = (stations_data || []).length - 1; j >= 0; j--) {
-        var connect = stations_data[j],
-            end_listen_ms   = connect.end_listen_s * 1000,
-            duration_ms     = connect.duration * 1000,
-            start_listen_ms = end_listen_ms - duration_ms;
-        // if (end_listen_ms < song.start_song_ms && end_listen_ms < song.after_15s_ms) { break; }
-        if (end_listen_ms < start_song_ms && end_listen_ms < after_15s_ms) { break; }
-        if (
-            start_listen_ms <= start_song_ms &&
-            end_listen_ms   >= start_song_ms &&
-            // time.get(start_listen_ms).day >= time.get(song.start_song_ms).day && // защита от того, что песня начилась в этих сутках, а закончилась в следующих или предыдущих
-            time.get(end_listen_ms).day   <= time.get(start_song_ms).day
-           )
-          {
-            // if (song.author === 'Скруджи' && song.song_name === 'Ровной Дороги') {
-            /*if (authorSong_name === 'Скруджи::::Ровной Дороги') {
-              console.log(authorSong_name);
-              console.log(new Date(connect.start_listen_ms), new Date(song.start_song_ms), new Date(connect.end_listen_ms))
-              console.log(playlist_data[authorSong_name].value_listeners_start_song)
-            }*/
-            // value_listeners_start_song++;
-            playlist_data[authorSong_name].value_listeners_start_song++;
-          }
-        // if (start_listen_ms <= song.after_15s_ms && end_listen_ms >= song.after_15s_ms) {
-        if (start_listen_ms <= after_15s_ms && end_listen_ms >= after_15s_ms) {
-          playlist_data[authorSong_name].value_listeners_after_15s++;
-        }
-      }
-    }
-    // playlist_data[authorSong_name].ratio = playlist_data[authorSong_name].value_listeners_after_15s - playlist_data[authorSong_name].value_listeners_start_song;
-    // Эта формула эквивалента формуле ниже: вычиатем 100 как бы принимая предыдущие значение за 100
-    // , но как вывести алгебраически не могу. Сделать позже
-    // res[key].ratio_percent                    =  (res[key].total_value_listeners_after_15s / res[key].total_value_listeners_start_song * 100 - 100).toFixed(2);
-    playlist_data[authorSong_name].ratio_percent = ((playlist_data[authorSong_name].value_listeners_after_15s - playlist_data[authorSong_name].value_listeners_start_song) / playlist_data[authorSong_name].value_listeners_start_song * 100).toFixed(2);
-  }
-
-  // console.log(playlist_data);
-  // global.process.exit();
-}
-
-
-// сортируем песни в порядке выдачи
-/* songs ––
-{ 'БОЖЬЯ КОРОВКА ГРАНИТНЫЙ КАМУШЕК':
-  { value_play: 1, total_value_listeners_start_song: 6, total_value_listeners_after_15s: 6, ratio_percent: '0.00' },
-  { value_play: 1, total_value_listeners_start_song: 22,total_value_listeners_after_15s: 23,ratio_percent: '4.55' },
-}
-return –– [ [ 'АНЖЕЛИКА ВАРУ', 3 ], [ 'ЛЕСОПОВАЛ Я КУПЛЮ ТЕБЕ ДОМ', 2 ], [ 'НИКОЛАЙ БАСКОВ ЛЮБОВЬ - НЕ СЛОВА', 2 ], ]
-*/
-function get_order_songs (CONTEXT) {
-  var playlist_data = CONTEXT.get('data_from_playlist'), songs_name = Object.keys(playlist_data),
-      songs_top_list = [];
-  for (var i = 0, l = songs_name.length; i < l; i++) {
-    var song_name = songs_name[i];
-    songs_top_list.push([song_name, playlist_data[song_name].value_play]);
-  }
-  songs_top_list.sort(sort.compare_dig_array_index('asc', 1));
-  // console.log(songs_top_list);
-  return songs_top_list;
+  asc.ar_series(read, queries, function(err, res) {
+    // if (!err) { console.log(CONTEXT.get('data_from_stations'));  }
+    cb_main(err || null, 'get_data_from_stations');
+  });
 }
 
 
 // data               –– [ { end_listen_s: 1461445199, mount: '/blackstarradio128.mp3', duration: 15 }, ... ]
 // data_from_stations –– [ { start_listen_ms: Sat Apr 23 2016 10:10:15 GMT+0300 (MSK), end_listen_ms: Sat Apr 23 2016 10:10:32 GMT+0300 (MSK),  mount: '/blackstarradio128.mp3', duration_ms: 17000 }, ]
-// function prepare_data_for_stations (CONTEXT, data) {
-//   for (var i = 0, l = data.length; i < l; i++) {
-//     var connect         = data[i],
-//         end_listen_ms   = connect.end_listen_s * 1000,
-//         duration_ms     = connect.duration * 1000,
-//         start_listen_ms = end_listen_ms - duration_ms;
-//     CONTEXT.get('data_from_stations').push({
-//       start_listen_ms: start_listen_ms,
-//       end_listen_ms  : end_listen_ms,
-//       // start_listen_ms: new Date(start_listen_ms),
-//       // end_listen_ms  : new Date(end_listen_ms),
-//       mount          : connect.mount,
-//       duration_ms    : duration_ms,
-//     });
-//   }
-// }
+function prepare_data_for_stations (CONTEXT, data) {
+  for (var i = 0, l = data.length; i < l; i++) {
+    var connect         = data[i],
+        end_listen_ms   = connect.end_listen_s * 1000,
+        duration_ms     = connect.duration * 1000,
+        start_listen_ms = end_listen_ms - duration_ms;
+    CONTEXT.get('data_from_stations').push({
+      start_listen_ms: start_listen_ms,
+      end_listen_ms  : end_listen_ms,
+      // start_listen_ms: new Date(start_listen_ms),
+      // end_listen_ms  : new Date(end_listen_ms),
+      mount          : connect.mount,
+      duration_ms    : duration_ms,
+    });
+  }
+}
 
 
 // data_from_playlist –– [ { start_song_ms: Sat Apr 23 2016 23:00:20 GMT+0300 (MSK), after_15s_ms: Sat Apr 23 2016 23:00:35 GMT+0300 (MSK), author: 'Michael Woods', song_name: 'Easy Tiger', mount: '/blackstarradio128.mp3' }, ]
@@ -313,7 +227,6 @@ function calc_listeners_startSong_after15s (CONTEXT) {
         connect.end_listen_ms   >= song.after_15s_ms
       ) { value_listeners_after_15s++; }
     }
-
     res.push({
       start_song_ms           : song.start_song_ms,
       after_15s_ms            : song.after_15s_ms,
@@ -326,7 +239,7 @@ function calc_listeners_startSong_after15s (CONTEXT) {
       song_name                  : song.song_name,
     });
   }
-  console.log('HERE___');
+  console.log('HERE___')
   CONTEXT['data_from_playlist']=null;
   CONTEXT['data_from_stations']=null;
   // console.log(res);
@@ -379,7 +292,25 @@ function calc_total_and_ratio (data_from_base_playlist) {
 }
 
 
-
+// сортируем песни в порядке выдачи
+/* songs ––
+{ 'БОЖЬЯ КОРОВКА ГРАНИТНЫЙ КАМУШЕК':
+  { value_play: 1, total_value_listeners_start_song: 6, total_value_listeners_after_15s: 6, ratio_percent: '0.00' },
+  { value_play: 1, total_value_listeners_start_song: 22,total_value_listeners_after_15s: 23,ratio_percent: '4.55' },
+}
+return –– [ [ 'АНЖЕЛИКА ВАРУ', 3 ], [ 'ЛЕСОПОВАЛ Я КУПЛЮ ТЕБЕ ДОМ', 2 ], [ 'НИКОЛАЙ БАСКОВ ЛЮБОВЬ - НЕ СЛОВА', 2 ], ]
+*/
+function get_order_songs (songs) {
+  var songs_name     = Object.keys(songs),
+      songs_top_list = [];
+  for (var i = 0, l = songs_name.length; i < l; i++) {
+    var song_name = songs_name[i];
+    songs_top_list.push([song_name, songs[song_name].value_play]);
+  }
+  songs_top_list.sort(sort.compare_dig_array_index('asc', 1));
+  // console.log(songs_top_list);
+  return songs_top_list;
+}
 
 // 22.04         283+112+223+347+464+487+436+487+474+462=3775
 // 22.04 - 23.04 283+112+223+348+465+490+440+494+483+486=3824

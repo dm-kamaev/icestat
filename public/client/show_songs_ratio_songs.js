@@ -19,48 +19,63 @@ var show_songs_ratio_songs = (function () {
     'main'                  : { id: 'main' },
     'datapicker'            : { id: 'main_1' },
     'check_radio'           : { id: 'main_2', style: 'style=text-align:center;margin-top:20px' },
-    button_exportExcel_table: { id: 'main_3' },
+    'get_data'              : { id: 'main_3', style: 'style=margin-top:50px;text-align:center'},
+    button_exportExcel_table: { id: 'main_4' },
   };
+  // для глобальной области скрипта, хранить данные
+  var INFO = { selected_station_name: ''}; // выбранная станция и первый запуск
 
   var start = function() {
-    getByID(TREE.main.id).innerHTML       = html_architecture();
-    getByID(TREE.datapicker.id).innerHTML = html_datepicker();
-    initDateSingle(build_page_songs_ratio_days); // вставляем в календарь вчерашний день и вешаем функцию на изменение даты
-    build_page_songs_ratio_days();
+    getByID(TREE.main.id).innerHTML        = html_architecture();
+    getByID(TREE.datapicker.id).innerHTML  = work_daterangepicker.get_html_daterange();
+    getByID(TREE.check_radio.id).innerHTML = html_check_radio(data_check_radio(getSelectedMounts()));
+    getByID(TREE.get_data.id).innerHTML    = html_button_get_data();
+
+    set_event_check_ratio_before_click_button();
+    getByID(TREE.get_data.id).onclick = build_page_songs_ratio_days;
+
+
+    var cookies = getCookie();
+    work_daterangepicker.init_datepicker(cookies.start_date, cookies.end_date); // вставляем в календарь даты из cook, либо вчерашний –– позавчерашний день
   };
 
   // ЭКСПОРТИРУЕМ СТАРТОВУЮ ФУНКЦИЮ
-  return { start : start };
+  return { start: start };
 
 // ---------------------------------------------------------------------------------------
   function build_page_songs_ratio_days () {
+    work_daterangepicker.changed_datepicker(build_page_songs_ratio_days);
     var CONTEXT = add_methods_context({});
 
-    var mountList = getSelectedMounts();
+    var mountList = getSelectedMounts(), range = getDateRange();
     CONTEXT.set('mountList', mountList);
+    CONTEXT.set('range_date', range);
+    work_cookie.set_range(range); // добавляем в cookie диапазаон дат
 
-    var for_check_ratio = data_check_radio(mountList);
-    getByID(TREE.check_radio.id).innerHTML              = html_check_radio(for_check_ratio);
-    getByID(TREE.button_exportExcel_table.id).innerHTML = '<p style=text-align:center;color:#999>Loading...</p>';
-    set_event_check_ratio(CONTEXT);
+    // TODO: сделать так чтобы два раза не вызывать функцию getSelectedMounts
+    getByID(TREE.check_radio.id).innerHTML = html_check_radio(data_check_radio(getSelectedMounts()));
+    set_event_check_ratio_after_click_button(CONTEXT);
 
-    request_about_songs_ratio_days(CONTEXT, for_check_ratio[0] || null);
+    getByID(TREE.button_exportExcel_table.id).innerHTML = '<p style=text-align:center;color:#999>Processing...</p>';
+
+    request_about_songs_ratio_days(CONTEXT);
   }
 
 
-  // station_name –– "Дорожное 64 (без рекламы)"
-  function request_about_songs_ratio_days (CONTEXT, station_name) {
-    var current_date = getSingleDate();
-    CONTEXT['current_date'] = current_date;
+  // station_name ––
+  function request_about_songs_ratio_days (CONTEXT) {
+    if (!INFO.selected_station_name) { html_error_not_selected_radio(); return;}
 
-    getByID(TREE.button_exportExcel_table.id).innerHTML = '<p style=margin-top:40px;text-align:center;color:#999>Loading...</p>';
+    getByID(TREE.get_data.id).innerHTML   = '';
+    getByID(TREE.button_exportExcel_table.id).innerHTML = '<p style=text-align:center;color:#999>Processing...</p>';
+
     var radio_station = fn.search_in_array(CONTEXT.get('mountList'), function(i, hash_station) {
-      return (hash_station.name === station_name) ? hash_station : false;
+      return (hash_station.name === INFO.selected_station_name) ? hash_station : false;
     });
-    if (!station_name) { html_error_not_exist_station(); return; }
-
-    CONTEXT['station_name'] = station_name;
-    var params = '/?station='+radio_station.hostname+'&mount='+radio_station.mount+'&date='+current_date;
+    CONTEXT['station_name'] = INFO.selected_station_name;
+    var range_date = CONTEXT.get('range_date');
+    var db_mount = [{ db:radio_station.hostname, stream:radio_station.mount }];
+    var params = '/?db_mount='+JSON.stringify(db_mount)+'&start_date='+range_date[0]+'&end_date='+range_date[1];
 
     _R('/other/api_songs_ratio_songs'+params, null, function(Xhr) {
       var answer         = JSON.parse(Xhr.responseText);
@@ -78,6 +93,7 @@ var show_songs_ratio_songs = (function () {
     html+='<div id='+TREE.main.id+'>';
       html+='<div id='+TREE.datapicker.id+'></div>'; // datapicker
       html+='<div id='+TREE.check_radio.id+' '+TREE.check_radio.style+'></div>'; // check_ratio
+      html+='<div id='+TREE.get_data.id+' '+TREE.get_data.style+'></div>'; // button get data
       html+='<div id='+TREE.button_exportExcel_table.id+'></div>'; // button export excel, table
     html+='</div>';
     return html;
@@ -100,9 +116,7 @@ var show_songs_ratio_songs = (function () {
   // mountList –– [ { hostname: "dorognoe.hostingradio.ru", mount: "/dor_64_no"mount_id: "2", name: "Дорожное 64 (без рекламы)", station_url: "http://dorognoe.hostingradio.ru:8000/status_stream.xsl" }, ... ]
   // return ["Дорожное 64 (без рекламы)", "BlackStarRadio", ...]
   function data_check_radio (mountList) {
-    return fn.map_value(mountList, function(station) {
-      return station.name;
-    });
+    return fn.map_value(mountList, function(station) { return station.name; });
   }
 
 
@@ -112,7 +126,7 @@ var show_songs_ratio_songs = (function () {
       var n  = i+1;
       var id = TREE.check_radio.id+'_'+n;
       // id вешаем всегда на input, иначе при делегировании событии, при клике на label, клик будет попадать и на input
-      if (i === 0) { // default: всегда включаем первую станцию
+      if (station_name === INFO.selected_station_name) {
         return html += '<label class=radio-inline><input id='+id+' type=radio name=optradio checked="checked">'+station_name+'</label>';
       }
       return html += '<label class=radio-inline><input id='+id+' type=radio name=optradio>'+station_name+'</label>';
@@ -120,7 +134,10 @@ var show_songs_ratio_songs = (function () {
   }
 
 
-  function set_event_check_ratio (CONTEXT) {
+  // вешаем обработчик на выбор станции
+  // будет работать до тех пор пока не нажмем кнопку 'Get data'
+  // только сохраняем имя станции выбранной
+  function set_event_check_ratio_before_click_button () {
     var check_radio_id = TREE.check_radio.id;
     getByID(check_radio_id).onclick = function(e) {
       var t = e && e.target || e.srcElement, m;
@@ -129,7 +146,27 @@ var show_songs_ratio_songs = (function () {
         m = t.id.match(new RegExp('^('+check_radio_id+'_\\d+)$'));
         if (m && m[1]) {
           var input_id = m[1];
-          request_about_songs_ratio_days(CONTEXT, getByID(input_id).parentNode.textContent);
+          INFO.selected_station_name = getByID(input_id).parentNode.textContent;
+        }
+      }
+    };
+  }
+
+
+  // вешаем обработчик на выбор станции
+  // будет работать после нажатия кнопки 'Get data'
+  // делаем запрос к серверу по клику
+  function set_event_check_ratio_after_click_button (CONTEXT) {
+    var check_radio_id = TREE.check_radio.id;
+    getByID(check_radio_id).onclick = function(e) {
+      var t = e && e.target || e.srcElement, m;
+      while(t && !t.id){t=t.parentNode;}
+      if (t.id) {
+        m = t.id.match(new RegExp('^('+check_radio_id+'_\\d+)$'));
+        if (m && m[1]) {
+          var input_id = m[1];
+          INFO.selected_station_name = getByID(input_id).parentNode.textContent;
+          request_about_songs_ratio_days(CONTEXT);
         }
       }
     };
@@ -149,20 +186,26 @@ var show_songs_ratio_songs = (function () {
     var songs = CONTEXT.get('data'), order_songs = CONTEXT.get('order_songs');
     html += '<table id=table_data class="table table-striped table-bordered">';
       html += '<tr>';
-        html += '<th colspan="4" style=background:#DDD;text-align:center>Songs Ratio</th>';
+        html += '<th colspan=5 style=background:#DDD;text-align:center>Songs Ratio</th>';
       html += '<tr>';
-        html += '<th>Meta</th>';
+        html += '<th>Author</th>';
+        html += '<th>Song name</th>';
         html += '<th>Number of playing</th>';
         html += '<th>Total listeners</th>';
         html += '<th>Rate of growth</th>';
       fn.foreach_value(order_songs, function(top_list) {
-      var song_name  = top_list[0],
-          value_play = top_list[1],
-          song       = songs[song_name];
+      var authorSong_name = top_list[0],
+          value_play      = top_list[1],
+          song            = songs[authorSong_name],
+          authorSongname  = authorSong_name.split('::::'),
+          author          = authorSongname[0],
+          song_name       = authorSongname[1];
       html += '<tr>';
+        html += '<td>'+author+'</td>';
         html += '<td>'+song_name+'</td>';
         html += '<td>'+value_play+'</td>';
-        html += '<td>'+song.total_value_listeners_start_song+'</td>';
+        // html += '<td>'+song.total_value_listeners_start_song+'</td>';
+        html += '<td>'+song.value_listeners_start_song+'</td>';
         html += html_ratio(song.ratio_percent);
       });
     html+= '</table>';
@@ -172,8 +215,9 @@ var show_songs_ratio_songs = (function () {
 
   function html_button_export_excel (CONTEXT) {
     var html = '';
-    var station_name  = CONTEXT.get('station_name').replace(/\s+/g, '_').replace(/\"\'/g, '');
-    var filename = 'table_songs_ratio_days_'+station_name+'_'+CONTEXT.get('current_date')+'.xls';
+    var station_name = CONTEXT.get('station_name').replace(/\s+/g, '_').replace(/\"\'/g, '');
+    var range_date   = CONTEXT.get('range_date'), view_date = range_date[0]+'_'+range_date[1];
+    var filename = 'table_songs_ratio_days_'+station_name+'_'+view_date+'.xls';
     html += '<a style="margin:20px auto" class="btn btn-default buttons-excel buttons-html5" download='+filename+' href="#" onclick="return ExcellentExport.excel(this, \'table_data\', \''+station_name+'\');">Export to Excel</a>';
     return html;
   }
@@ -201,12 +245,17 @@ var show_songs_ratio_songs = (function () {
   }
 
 
-  // если нет такой радио станции
-  function html_error_not_exist_station () {
-    var text = 'Sorry, this radio station is missing.';
+  // если не выбрано ни одной станции при нажатии кнопки 'Get data'
+  function html_error_not_selected_radio () {
+    var text = 'Please, select radio.';
     var html = '';
-    html += '<span style="font-size:200%;color:#EC4B4B">'+text+'<span>';
+    html += '<p style=margin-top:100px;text-align:center><span style="font-size:200%;color:#EC4B4B">'+text+'</span></p>';
     getByID(TREE.button_exportExcel_table.id).innerHTML = html;
+  }
+
+  function html_button_get_data () {
+    var html = '';
+    return '<button type=button style="width:25%;font-size:140%;" class="btn btn-success">Get data</button>';
   }
 
 }());
