@@ -315,3 +315,7 @@ INSERT INTO permissions SET user_id=10, mount_id=243, selected=0;
 INSERT INTO permissions SET user_id=10, mount_id=244, selected=0;
 INSERT INTO permissions SET user_id=10, mount_id=245, selected=0;
 INSERT INTO permissions SET user_id=10, mount_id=246, selected=0;
+
+
+ALTER TABLE `2016-02-24` ADD INDEX id (id);
+-- ALTER TABLE `table` DROP INDEX `index_name`;

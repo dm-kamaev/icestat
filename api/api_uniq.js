@@ -34,7 +34,6 @@ var MAX_DAY = 100; // максимальный диапозон дат в дня
 var express = require('express');
 var router  = express.Router();
 router.post('/', function(req, res, next) {
-  req.timeout
   // от клиента
   // [{ db: 'stations_dorognoe.hostingradio.ru', mount: '/dor_64_no' }, { db: 'stations_blackstarradio.hostingradio.ru', mount: '/blackstarradio128.mp3' }],
   var radios     = JSON.parse(req.body.radios);
@@ -152,7 +151,7 @@ function calc_allUniq_listeners (CONTEXT, date, listeners_by_date) {
   for (var j = 0; j < l1; j++) {
     var listener = listeners_by_date[j];
     temp_uniq[listener.ip + '_' + listener.agent] = 1;
-    var md5sum = crypto.createHash('md5');
+    // var md5sum = crypto.createHash('md5');
     // temp_uniq[ md5sum.update(listener.ip+listener.agent).digest('hex') ] = 1;
   }
   // console.log(res);
