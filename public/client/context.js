@@ -23,7 +23,7 @@ var add_methods_context = (function () {
         return val;
       } else {
         // my_util.process_err('context.get Error:', 'context.get.'+key+'===UNDEFINED '+info(this));
-        console.log('context.get Error:', 'context.get.' + key + ' === UNDEFINED ' + this);
+        console.error('context.get Error:', 'context.get.' + key + ' === UNDEFINED ' + this);
         return null;
       }
     };
@@ -37,7 +37,7 @@ var add_methods_context = (function () {
     return function(key, val) {
       if(this[key]) {
         // my_util.process_err('context.set Error:', 'Try twice set context.set.'+key+' '+info(this));
-        console.trace('context.set Error:', 'Try twice set context.set.'+key+' '+ this);
+        console.error('context.set Error:', 'Try twice set context.set.'+key+' '+ this);
       } else {
         this[key] = val;
       }
@@ -53,9 +53,9 @@ var add_methods_context = (function () {
   var gen_increment_context = function () {
     return function(key) {
       if(!this[key]) {
-        console.log('context.increment Error:', 'Not exist context.increment'+key+' '+ this);
+        console.error('context.increment Error:', 'Not exist context.increment'+key+' '+ this);
       } else if (typeof this[key] !== 'number') {
-        console.log('context.increment Error:', 'Not digit context.increment.'+key+' '+ this);
+        console.error('context.increment Error:', 'Not digit context.increment.'+key+' '+ this);
       } else {
         this[key] = this[key]+1;
       }
