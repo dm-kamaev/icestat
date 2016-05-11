@@ -68,6 +68,7 @@ function read (q, callback) {
         // row –– это массив, элементы которого хэши. Ключи хэша это поля,
         // по которым совершенна выборка, обратиться к ним можно следующим образом (строчка ниже)
         // console.log('The result is: ', rows[0].bank_id +'––'+ rows[0].bank_name);
+        console.time('Time query_read:');
         connection.query(q, function(err, rows) {
           connection.release();
           // ошибка запроса
@@ -75,6 +76,7 @@ function read (q, callback) {
             // Append_in_File_Sync('/r_m/nodejs/log/mysql.txt', Now_Time() + '\nОшибка ЧТЕНИЯ (Запрос): ' + err + '\n\n');
             callback(err+' | '+q);
           } else {
+             console.timeEnd('Time query_read:');
              callback(null, rows);
           }
         });

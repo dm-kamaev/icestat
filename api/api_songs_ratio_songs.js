@@ -258,6 +258,16 @@ function get_order_songs (CONTEXT) {
 }
 
 
+
+
+
+
+
+
+
+
+// OLD CODE
+
 // data               –– [ { end_listen_s: 1461445199, mount: '/blackstarradio128.mp3', duration: 15 }, ... ]
 // data_from_stations –– [ { start_listen_ms: Sat Apr 23 2016 10:10:15 GMT+0300 (MSK), end_listen_ms: Sat Apr 23 2016 10:10:32 GMT+0300 (MSK),  mount: '/blackstarradio128.mp3', duration_ms: 17000 }, ]
 // function prepare_data_for_stations (CONTEXT, data) {
