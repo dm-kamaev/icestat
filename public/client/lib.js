@@ -9,6 +9,7 @@ window.addEventListener('load', function(e) {
     // show_songs_ratio_days.start();
     // show_songs_ratio_songs.start();
     // showTSLReport();
+    // showDurationsPage();
   }, 900);
 });
 

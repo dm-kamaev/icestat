@@ -1,3 +1,13 @@
+/*jshint sub: true*/
+/*jshint loopfunc: true */
+/*jshint newcap: false */
+/*jshint multistr: true */
+/*jshint expr: true */
+/*jshint esnext: true */
+
+
+// ОПИСАНИЕ СКРИПТА
+
 function requestOtherDurationsChartData() {
     // initDatepicker(sendOtherDurationsRequest);
     var cookies = getCookie();
@@ -119,10 +129,18 @@ function prepareFieldsForOtherDurationsTable(data, totalData) {
             dataSet[6][name] = record.d_more_5h;
         }
     }
+
     if (data.length > 1) {
-        columns.push({ title: 'Total', data: 'total' });
-        for (var n = 0; n < totalData.length; n++)
-            dataSet[n].total = totalData[n];
+      columns.push({ title: 'Total', data: 'total' });
+      for (var n = 0; n < totalData.length; n++) {
+        // TODO: в будущем переписать это
+        fn.each(dataSet[n], function(key, value) {
+          if (/total_\d+/.test(key)) {
+            (dataSet[n].total) ? dataSet[n].total += value : dataSet[n].total = value;
+          }
+        });
+        // dataSet[n].total = totalData[n];
+      }
     }
 
     result.columns = columns;
