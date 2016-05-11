@@ -29,7 +29,8 @@ function start () {
     (cbm) => { Get_list_db.databases_playlist_from_like(CONTEXT, cbm); },
     (cbm) => { get_tables_for_each_playlist_radio(CONTEXT,cbm); },
     // (cbm) => { add_author_songName(CONTEXT, cbm); },
-    (cbm) => { add_index_by_in_playlist(CONTEXT, cbm); },
+    // (cbm) => { add_index_by_in_playlist(CONTEXT, cbm); },
+    // (cbm) => { order_desc_by_date(CONTEXT, cbm); },
     ],function(err, result) {
       // console.log(CONTEXT.get('databases_playlist_from_like'));
       // console.log(CONTEXT.get('db_listTables')['playlist_xmusicradio.hostingradio.ru']);
@@ -119,5 +120,35 @@ function add_index_by_in_playlist (CONTEXT, cb_main) {
   asc.ar_series(add_fileds, queries, function(err, res) {
     console.log(err || res);
     cb_main(err || null, 'add_index_by_in_playlist');
+  });
+}
+
+
+function order_desc_by_date (CONTEXT, cb_main) {
+  // CONTEXT['db_listTables'] =
+  // { 'playlist_xmusicradio.hostingradio.ru': { '2016-03-29': 0, '2016-03-30': 1, '2016-03-31': 2, '2016-04-01': 3, '2016-04-02': 4, '2016-04-03': 5, '2016-04-04': 6, '2016-04-05': 7, '2016-04-06': 8, '2016-04-07': 9, '2016-04-08': 10, '2016-04-09': 11, '2016-04-10': 12, '2016-04-11': 13, '2016-04-12': 14,
+  //   '2016-04-13': 15,  '2016-04-14': 16,  '2016-04-15': 17,  '2016-04-16': 18,  '2016-04-17': 19,  '2016-04-18': 20,  '2016-04-19': 21
+  // }};
+  var db_listTables = CONTEXT.get('db_listTables'), dbs_name = Object.keys(db_listTables),  queries = [];
+  for (var i = 0, l = dbs_name.length; i < l; i++) {
+    var db_name = dbs_name[i];
+    // if (db_name !== 'playlist_stream01.chameleon.fm') { continue; }
+    var hash_dates = db_listTables[db_name], dates = Object.keys(hash_dates);
+    for (var j = 0, l1 = dates.length; j < l1; j++) {
+      var date = dates[j];
+      queries.push("ALTER TABLE `"+db_name+"`.`"+date+"`  ORDER BY date DESC");
+    }
+  }
+  // console.log('queries= ', queries); global.process.exit();
+  var add_fileds = function (query, cb) {
+    db.insert(query, function(err, res) {
+      console.log(query);
+      if (err) { console.log('ORDER_DESC_BY_DATE: ERROR => ', err); }
+      cb(null, null);
+    });
+  };
+  asc.ar_series(add_fileds, queries, function(err, res) {
+    console.log(err || res);
+    cb_main(err || null, 'ORDER_DESC_BY_DATE');
   });
 }

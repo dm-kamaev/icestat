@@ -9,7 +9,7 @@
 
 "use strict";
 
-// ОПИСАНИЕ СКРИПТА
+// ВСТАВКА в playlist_* author and song_name, КОТОРЫЕ ПОЛУЧЕНЫ ИЗ ФАЙЛОВ downloads/*/playlist.log
 
 var CONF  = require('/icestat/config.js').settings();
 var fs    = require('fs');
@@ -23,7 +23,7 @@ var Get_list_db = require(CONF.oft_modules + 'Get_list_db.js');
 var Iterate_db  = require(CONF.oft_modules + 'Iterate_db.js');
 
 
-start();
+// start();
 // ---------------------------------------------------------------------------------------------------
 function start () {
   var CONTEXT = require('/icestat/my/context.js').add_set_get({});
