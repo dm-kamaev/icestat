@@ -6,7 +6,7 @@
 /*jshint esnext: true */
 
 
-// ОПИСАНИЕ СКРИПТА
+// СТАРЫЙ НЕ ИСПОЛЬЗУЕМЫ КОД ДЛЯ Other -> Durations
 
 function requestOtherDurationsChartData() {
     // initDatepicker(sendOtherDurationsRequest);
@@ -58,11 +58,14 @@ function sendOtherDurationsRequest() {
                var d_5min = 0;
 
                var data = [];
+               console.log('AJAX = ', result);
                for (var i = 0; i < result.length; i++) {
                    var records = result[i].data.Records;
                    for (var j = 0; j < records.length; j++) {
                        var item = records[j];
+                       console.log('item=', item);
                        d_10_30min += item.d_10_30min;
+                       // console.log(item.d_10_30min, d_10_30min)
                        d_30m_1h += item.d_30m_1h;
                        d_1_2h += item.d_1_2h;
                        d_2_5h += item.d_2_5h;
@@ -109,8 +112,9 @@ function prepareFieldsForOtherDurationsTable(data, totalData) {
 
     columns.push({ title: 'Duration', data: 'title' });
 
-    for (var i = 0; i < data.categories.length; i++)
-        dataSet.push({title : data.categories[i]});
+    for (var i = 0; i < data.categories.length; i++) {
+      dataSet.push({title : data.categories[i]});
+    }
 
     for (var p = 0; p < data.length; p++) {
         var item = data[p].mountItem;
@@ -120,6 +124,7 @@ function prepareFieldsForOtherDurationsTable(data, totalData) {
         var records = data[p].data.Records;
         for (var j = 0; j < records.length; j++) {
             var record = records[j];
+            console.log('d_5min = ', record.d_5min);
             dataSet[0][name] = record.d_5min;
             dataSet[1][name] = record.d_5_10min;
             dataSet[2][name] = record.d_10_30min;
