@@ -8,6 +8,7 @@ window.addEventListener('load', function(e) {
     // show_uniq.start();
     // show_songs_ratio_days.start();
     // show_songs_ratio_songs.start();
+    // show_durations.start();
     // showTSLReport();
     // showDurationsPage();
   }, 900);

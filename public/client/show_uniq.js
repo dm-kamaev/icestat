@@ -131,11 +131,11 @@ var show_uniq = (function () {
             uniq = data[key].uniq;
         sum_all_listeners  += all;
         sum_uniq_listeners += uniq;
-        html += '<td>'+separate_discharges(all)+'</td>';
-        html += '<td>'+separate_discharges(uniq)+'</td>';
+        html += '<td>'+format.separate_discharges(all)+'</td>';
+        html += '<td>'+format.separate_discharges(uniq)+'</td>';
         });
-       html += '<td>'+separate_discharges(sum_all_listeners)+'</td>';
-       html += '<td>'+separate_discharges(sum_uniq_listeners)+'</td>';
+       html += '<td>'+format.separate_discharges(sum_all_listeners)+'</td>';
+       html += '<td>'+format.separate_discharges(sum_uniq_listeners)+'</td>';
     html+= '</table>';
     return html;
   }
@@ -175,10 +175,6 @@ var show_uniq = (function () {
       return data[radio[0]+'_'+range_date].uniq;
     });
   }
-
-
-  // отделяем разряды чисел было 10200 стало 10 200
-  function separate_discharges (str) {  return str.toString().replace(/(\d)(?=(\d{3})+$)/g, '$1 '); }
 
 
 }());
