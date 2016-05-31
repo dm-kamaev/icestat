@@ -22,6 +22,7 @@ var show_songs_ratio_songs = (function () {
     'get_data'              : { id: 'main_3', style: 'style=margin-top:50px;text-align:center'},
     button_exportExcel_table: { id: 'main_4' },
   };
+  // TODO: Отказаться от INFO в пользу CONTEXT
   // для глобальной области скрипта, хранить данные
   var INFO = { selected_station_name: ''}; // выбранная станция и первый запуск
 
@@ -32,19 +33,19 @@ var show_songs_ratio_songs = (function () {
     getByID(TREE.get_data.id).innerHTML    = html_button_get_data();
 
     set_event_check_ratio_before_click_button();
-    getByID(TREE.get_data.id).onclick = build_page_songs_ratio_days;
+    getByID(TREE.get_data.id).onclick = build_page_songs_ratio_songs;
 
 
     var cookies = getCookie();
     work_daterangepicker.init_datepicker(cookies.start_date, cookies.end_date); // вставляем в календарь даты из cook, либо вчерашний –– позавчерашний день
+    work_daterangepicker.changed_datepicker(build_page_songs_ratio_songs);
   };
 
   // ЭКСПОРТИРУЕМ СТАРТОВУЮ ФУНКЦИЮ
   return { start: start };
 
 // ---------------------------------------------------------------------------------------
-  function build_page_songs_ratio_days () {
-    work_daterangepicker.changed_datepicker(build_page_songs_ratio_days);
+  function build_page_songs_ratio_songs () {
     var CONTEXT = add_methods_context({});
 
     var mountList = getSelectedMounts(), range = getDateRange();
@@ -253,10 +254,7 @@ var show_songs_ratio_songs = (function () {
     getByID(TREE.button_exportExcel_table.id).innerHTML = html;
   }
 
-  function html_button_get_data () {
-    var html = '';
-    return '<button type=button style="width:25%;font-size:140%;" class="btn btn-success">Get data</button>';
-  }
+  function html_button_get_data () { return '<button type=button style="width:25%;font-size:140%;" class="btn btn-success">Get data</button>'; }
 
 }());
 
