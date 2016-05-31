@@ -11,6 +11,8 @@ window.addEventListener('load', function(e) {
     // show_durations.start();
     // showTSLReport();
     // showDurationsPage();
+    // showMapByCountryListenersPage();
+    show_country.start();
   }, 900);
 });
 
@@ -27,6 +29,17 @@ function objectLength (obj) {
     if (obj.hasOwnProperty(key)) size++;
   }
   return size;
+}
+
+
+// полифил для Object.keys
+// console.log(objectKeys({1:2, 'test':124}))
+function objectKeys (obj) {
+  var keys = [];
+  for (key in obj) {
+    if (obj.hasOwnProperty(key)) keys.push(key);
+  }
+  return keys;
 }
 
 

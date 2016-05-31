@@ -85,7 +85,7 @@ var time = (function () {
 
 
   // data –– ms, строка в нужном формате, объект функции get
-  exports.format = function (str, data) {
+  exports.format = function format (str, data) {
     var time = (typeof data === 'object') ? data : get(data || null);
     return str.replace(/YYYY/g, time.year)
               .replace(/MM/g, exports.add_prefix_zero(time.month))
@@ -103,7 +103,7 @@ var time = (function () {
 
 
   exports.get_next_day = function (day) {
-    day = (day) ? day : format('YYYY-MM-DD', new Date());
+    day = (day) ? day.replace(/-/g, ' ') : format('YYYY-MM-DD', new Date());
     // 1 –– сдвиг в ms на следующий день, -1 –– сдвиг в ms на предыдущий день
     // (+36) || (-12) часов - сдвигаем на середину дня
     // защищаемся от "летнего/зимнего" времени
@@ -138,6 +138,23 @@ var time = (function () {
     end   = Number(end);
     var res = [];
     for (var i = start; i <= end; i++) { res[i] = exports.add_prefix_zero(i); }
+    return res;
+  };
+
+
+  // console.log(get_range_date('2016-03-07', '2016-03-10', 7));
+  // start_date, end_date –– формат 'YYYY-MM-DD'
+  // max_days –– digit, можно задавать маскисмальное число разницы между днями
+  // return ––  [ '2016-03-07', '2016-03-08', '2016-03-09', '2016-03-10',]
+  exports.get_range_date = function (start_date, end_date, max_days) {
+    var res = [], current;
+    res.push(start_date);
+
+    for (var i = 0; i < max_days; i++) {
+      if (start_date === end_date) { return res;}
+      start_date = exports.format('YYYY-MM-DD', exports.get(exports.get_next_day(start_date)));
+      res.push(start_date);
+    }
     return res;
   };
 
