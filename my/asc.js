@@ -44,22 +44,32 @@ function series(f_array, finish_callback) {
 }
 exports.series = series;
 
-// ПАТТЕРН ИСПОЛЬЗОВАНИЯ
-// series([
-//   function(cb_main) {
-//     setTimeout(function() {console.log('1');cb_main(null, 'ok')},1000);
-//   },
-//   function(cb_main) {
-//     setTimeout(function() {console.log('2');cb_main(null, 'ok')},1000);
-//   },
-//   function(cb_main) {
-//     setTimeout(function() {console.log('3');cb_main(null, 'ok')},1000);
-//   },
-//   ], function(err, result) {
-//   console.log(err || null, result || null);
-// });
 
-// ПРИМЕР БОЛЕЕ СЛОЖНЫЙ РАБОТЫ С SERIES
+// OLD METHODS: REMOVE IN FUTURE
+function ar_series(func, ar_param, ext_cb) {
+  map_series(func, ar_param, ext_cb);
+  // Формируем массив анонимных функций
+//   var Series_Arr = [];
+//   for (var k = 0, l = ar_param.length; k < l; k++) {
+//     (function(param) {
+//       Series_Arr.push(function(cb) {
+//         func(param, cb);
+//       });
+//     }(ar_param[k]));
+//   }
+
+//   series(
+//     Series_Arr, function(err, result) {
+//       // это логи каждой вставки
+//       // console.log('myasync series done:', err || result);
+//       ext_cb(err || null, result || null);
+//     }
+//   );
+}
+exports.ar_series = ar_series;
+
+
+// ПАТТЕРН ИСПОЛЬЗОВАНИЯ
 // var cb = function(n, int) {
 //   console.log('number = ', n);
 //   int(null, n);
@@ -98,7 +108,7 @@ asc.ar_series(my_stat, array_path, function(err, result) {
 // func – функция асинх,
 // ar_param –– параметр для функции,
 // ext_cb –– внешний callback
-function ar_series(func, ar_param, ext_cb) {
+function map_series (func, ar_param, ext_cb) {
   // Формируем массив анонимных функций
   var Series_Arr = [];
   for (var k = 0, l = ar_param.length; k < l; k++) {
@@ -117,7 +127,31 @@ function ar_series(func, ar_param, ext_cb) {
     }
   );
 }
-exports.ar_series = ar_series;
+exports.map_series = map_series;
+
+
+// OLD METHODS
+function ar_series_with_params (func, ar_param, additonal_params, ext_cb) {
+  map_seriesParam(func, ar_param, additonal_params, ext_cb);
+  // Формируем массив анонимных функций
+  // var Series_Arr = [];
+  // for (var k = 0, l = ar_param.length; k < l; k++) {
+  //   (function(param) {
+  //     Series_Arr.push(function(cb) {
+  //       func(param, additonal_params, cb);
+  //     });
+  //   }(ar_param[k]));
+  // }
+
+  // series(
+  //   Series_Arr, function(err, result) {
+  //     // это логи каждой вставки
+  //     // console.log('myasync series done:', err || result);
+  //     ext_cb(err || null, result || null);
+  //   }
+  // );
+}
+exports.ar_series_with_params = ar_series_with_params;
 
 
 /* ПАТТЕРН ВЫЗОВА
@@ -130,8 +164,7 @@ var my_stat = function (path, cb) {
     }
   });
 };
-
-asc.ar_series_with_params(my_stat, array_path, function(err, result) {
+asc.map_seriesParams(my_stat, array_path, function(err, result) {
   callback_main(err || null, result || null);
 });
 */
@@ -139,7 +172,7 @@ asc.ar_series_with_params(my_stat, array_path, function(err, result) {
 // ar_param –– массив параметров для функции, для каждой функции они разные
 // additonal_params –– массив параметров одинаковых для всех функций,
 // ext_cb –– внешний callback
-function ar_series_with_params(func, ar_param, additonal_params, ext_cb) {
+function map_seriesParam (func, ar_param, additonal_params, ext_cb) {
   // Формируем массив анонимных функций
   var Series_Arr = [];
   for (var k = 0, l = ar_param.length; k < l; k++) {
@@ -158,12 +191,10 @@ function ar_series_with_params(func, ar_param, additonal_params, ext_cb) {
     }
   );
 }
-exports.ar_series_with_params = ar_series_with_params;
+exports.map_seriesParam = map_seriesParam;
 
 
-
-
-function series_move_data(f_array, finish_callback) {
+function waterfall (f_array, finish_callback) {
 
   var result  = [],
       current = 0,
@@ -196,6 +227,45 @@ function series_move_data(f_array, finish_callback) {
   };
 
   internal_callback();
+
+}
+exports.waterfall = waterfall;
+
+
+// OLD METHOD: REMOVE IN FUTURE
+function series_move_data(f_array, finish_callback) {
+  waterfall(f_array, finish_callback);
+  // var result  = [],
+  //     current = 0,
+  //     finish  = f_array.length;
+
+  // var internal_callback = function(err, move_data, data) {
+
+  //   // move_data –– это данные, которые передаем из текущей функции в следующую функцию
+  //   // data      –– это данные, которые возвращает callback из вызванной функции из массива
+  //   if (move_data && !data) { // вызываем без передачи данных
+  //     if (move_data || move_data === 0) {
+  //       result.push(move_data);
+  //     }
+  //   } else if (move_data && data) {
+  //    if (data || data === 0) { // вызываем с передачей данных
+  //      result.push(data);
+  //    }
+  //   }
+  //   if (err) {
+  //     finish_callback(err); // Если ошибка, взываем главный callback серии
+  //   } else if (current < finish) { // Пока не кончился массив берем элемент массива (функцию)
+  //     var el_array = f_array[current];
+  //     current++;
+  //     setImmediate(function() {
+  //       el_array(internal_callback, move_data); // передаем данные в следующую функцию
+  //     }); // Передаем только internal_callback потому что первый параметр j (уже присутствует значения)
+  //   } else {
+  //     finish_callback(null, result);
+  //   }
+  // };
+
+  // internal_callback();
 
 }
 exports.series_move_data = series_move_data;

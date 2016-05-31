@@ -8,6 +8,11 @@ var app = require('../app');
 var debug = require('debug')('icestat_web:server');
 var http = require('http');
 
+var CONF   = require('/icestat/config.js').settings();
+var failed_server = require(CONF.svr_modules + 'failed_server.js');
+var access_log = require(CONF.svr_modules + 'access_log.js');
+failed_server.send_mail(); // если сервер упадет, то шлем уведомление на почту
+
 /**
  * Get port from environment and store in Express.
  */
@@ -19,7 +24,11 @@ app.set('port', port);
  * Create HTTP server.
  */
 
-var server = http.createServer(app);
+// var server = http.createServer(app);
+var server = http.createServer(function(req, res) {
+  access_log.write(req, res);
+  app(req, res);
+});
 server.timeout = 0; // отключаем timeout для http requests, ибо большие данные иногда не успевают доехать
 
 /**

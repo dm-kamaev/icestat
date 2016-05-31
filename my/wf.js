@@ -13,17 +13,32 @@ var fs  = require('fs');
 var asc = require('/icestat/my/asc.js');
 
 
-function read_file (path, callback) {
+// OLD METHOD: REMOVE IN FUTURE
+exports.read_file = function (path, callback) {
+  read(path, callback);
+  // fs.readFile(path, {encoding: 'utf8'},
+  //   function(err, data) {
+  //     if (err) {
+  //       callback(err, 'ERROR: read_file => path\n\n'); // TODO: Писать в логи потом
+  //     } else {
+  //       callback(null, data);
+  //     }
+  //   });
+};
+
+
+function read (path, cb) {
   fs.readFile(path, {encoding: 'utf8'},
     function(err, data) {
       if (err) {
-        callback(err, 'ERROR: read_file => path\n\n'); // TODO: Писать в логи потом
+        console.log('ERROR: read_file => path\n\n', err);
+        cb(err, 'ERROR: read_file => path\n\n');
       } else {
-        callback(null, data);
+        cb(null, data);
       }
     });
 }
-exports.read_file = read_file;
+exports.read = read;
 
 
 // помещаем данные в callback чтобы передать их в следущую функцию
@@ -68,6 +83,19 @@ function add_file (path, data, callback) {
   });
 }
 exports.add_file = add_file;
+
+
+exports.append = function (path, data, cb) {
+  // fs.appendFile(path, {encoding: 'utf8'}, data, function (err) {
+  fs.appendFile(path, data, function (err) {
+    if (err) {
+      console.log(err); // TODO: Писать в логи потом
+      cb(err, 'ERROR: add_to_file => path\n\n');
+    } else {
+      if (cb) { cb(null, 'wf.add_file'); }
+    }
+  });
+};
 
 
 // default кодировка utf8
